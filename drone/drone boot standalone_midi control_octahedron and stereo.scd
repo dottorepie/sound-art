@@ -50,7 +50,7 @@ wt = signal.asWavetable;
 SynthDef.new(\synth,{
 
 	arg gain=1,low=7168,high=0,tone=0,band=1,lamdoma=1,brain=1,pan_speed=1;
-	var gold=45,silver1=0,silver2=180,gold_r=((1+5.sqrt)/2),silver_r=(1+2.sqrt),room=1,mix=1;
+	var gold=45,silver1=0,silver2=180,gold_r=((1+5.sqrt)/2),silver_r=(1+2.sqrt),room=0.7,mix=0.8;
 	var freq,fund,n=0,m,phase,interval,alpha,cell_az,cell_el,pulsenum=32;
 	var sig1,sig2,first=28,bank=9,out1,out2,fm,band_osc1,band_osc2,amp,ton;
 	var linex,liney,silver3=45,cell_l,cell_r,band_osc3,band_osc4;
@@ -58,7 +58,7 @@ SynthDef.new(\synth,{
 
 bank.do{
 
-ton=2.pow(tone.lag(0.1)/16256).round(0.0001);
+ton=2.pow(tone.lag(0.1)/992).round(0.0001);
 
 fund=(first*lamdoma.lag(0.1))*ton;
 n=n+1;
@@ -71,10 +71,10 @@ phase=gold.degrad;
 fm=LFNoise1.ar(amp,amp.reciprocal);
 freq=freq;
 
-band_osc1=SinOsc.kr(freq.reciprocal*band,phase:90.degrad).range(56,16256);
-band_osc2=SinOsc.kr(freq.reciprocal*band,phase:90.degrad).range(56,16256);
-band_osc3=SinOsc.kr(freq.reciprocal*band,phase:90.degrad.neg).range(56,16256);
-band_osc4=SinOsc.kr(freq.reciprocal*band,phase:90.degrad.neg).range(56,16256);
+band_osc1=SinOsc.kr(freq.reciprocal*2.pow(band/56),phase:90.degrad).range(56,16256);
+band_osc2=SinOsc.kr(freq.reciprocal*2.pow(band/56),phase:90.degrad).range(56,16256);
+band_osc3=SinOsc.kr(freq.reciprocal*2.pow(band/56),phase:90.degrad.neg).range(56,16256);
+band_osc4=SinOsc.kr(freq.reciprocal*2.pow(band/56),phase:90.degrad.neg).range(56,16256);
 
 linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
@@ -156,10 +156,11 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 		if(~synth.isPlaying,{~synth.set(\low,low)});
 },29);
 	);
+
 		(
 MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 		var band;
-	band=val.linlin(0,127,0.001,100).round(0.00001);
+	band=val.linlin(0,127,(28*8).neg,28*32).round(1).asInteger;
 		band.postln;
 		if(~synth.isPlaying,{~synth.set(\band,band)});
 },30);
@@ -167,7 +168,7 @@ MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 					(
 MIDIdef.cc(\midi_pot6,{ |val, num, chan, src|
 		var tone;
-		tone=val.linlin(0,127,0,16256*4).round(1).asInteger;
+		tone=val.linlin(0,127,0,496*8).round(1).asInteger;
 		tone.postln;
 		if(~synth.isPlaying,{~synth.set(\tone,tone)});
 },31);

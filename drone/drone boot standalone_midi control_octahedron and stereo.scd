@@ -50,10 +50,10 @@ wt = signal.asWavetable;
 SynthDef.new(\synth,{
 
 	arg gain=1,low=7168,high=0,tone=0,band=1,lamdoma=1,brain=1,pan_speed=1;
-	var gold=45,silver1=0,silver2=180,gold_r=((1+5.sqrt)/2),silver_r=(1+2.sqrt),room=0.9.rand,mix=0.3333;
+	var gold=45,silver1=0,silver2=180,gold_r=((1+5.sqrt)/2),silver_r=(1+2.sqrt),room=1,mix=1;
 	var freq,fund,n=0,m,phase,interval,alpha,cell_az,cell_el,pulsenum=32;
 	var sig1,sig2,first=28,bank=9,out1,out2,fm,band_osc1,band_osc2,amp,ton;
-	var linex,liney,silver3=45,cell_l,cell_r;
+	var linex,liney,silver3=45,cell_l,cell_r,band_osc3,band_osc4;
 
 
 bank.do{
@@ -69,25 +69,31 @@ amp=m.reciprocal*lamdoma.reciprocal*ton.reciprocal;
 phase=gold.degrad;
 
 fm=LFNoise1.ar(amp,amp.reciprocal);
-freq=freq+fm;
+freq=freq;
 
-band_osc1=SinOsc.kr(freq.reciprocal*band,phase:0.degrad).range(220,20000);
-band_osc2=SinOsc.kr(freq.reciprocal*band,phase:90.degrad).range(220,20000);
+band_osc1=SinOsc.kr(freq.reciprocal*band,phase:90.degrad).range(56,16256);
+band_osc2=SinOsc.kr(freq.reciprocal*band,phase:90.degrad).range(56,16256);
+band_osc3=SinOsc.kr(freq.reciprocal*band,phase:90.degrad.neg).range(56,16256);
+band_osc4=SinOsc.kr(freq.reciprocal*band,phase:90.degrad.neg).range(56,16256);
 
 linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
 
-sig1=LPF.ar(Pulse.ar((freq),width:0.5,mul:amp).abs,low/32)*SinOsc.ar((freq/pulsenum),phase,amp);
-sig2=LPF.ar(Pulse.ar((freq)+brain,width:0.5,mul:amp).abs,low/32)*SinOsc.ar((freq/pulsenum)+brain,phase,amp);
+sig1=BPF.ar(BRF.ar(
+(LPF.ar(Pulse.ar((freq),width:0.5,mul:amp).abs,low/32)*SinOsc.ar((freq/pulsenum),phase,amp)),
+	band_osc3.lag(0.1),lamdoma.wrap(1/2,1).lag(0.1)),band_osc1.lag(0.1),lamdoma.wrap(1/2,1).lag(0.1));
+sig2=BPF.ar(BRF.ar(
+(LPF.ar(Pulse.ar((freq)+brain,width:0.5,mul:amp).abs,low/32)*SinOsc.ar((freq/pulsenum)+brain,phase,amp)),
+band_osc4.lag(0.1),lamdoma.wrap(1/2,1).lag(0.1)),band_osc2.lag(0.1),lamdoma.wrap(1/2,1).lag(0.1));
 
 sig1=LPF.ar(sig1,low.lag(0.1)); sig2=LPF.ar(sig2,low.lag(0.1));
 sig1=HPF.ar(sig1,high.lag(0.1)); sig2=HPF.ar(sig2,high.lag(0.1));
 
-cell_az=Osc.kr(~w.bufnum,pan_speed,phase:0.degrad).range(180.neg,180);
-cell_el=SinOsc.kr(pan_speed,phase:90.degrad).range(90.neg,90);
+cell_az=Osc.kr(~w.bufnum,pan_speed.lag(0.1),phase:0.degrad).range(180.neg,180);
+cell_el=SinOsc.kr(pan_speed.lag(0.1),phase:90.degrad).range(90.neg,90);
 
-cell_l=SinOsc.kr(pan_speed,phase:0.degrad);
-cell_r=SinOsc.kr(pan_speed,phase:180.degrad);
+cell_l=SinOsc.kr(pan_speed.lag(0.1),phase:0.degrad);
+cell_r=SinOsc.kr(pan_speed.lag(0.1),phase:180.degrad);
 
 out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,(silver1+cell_az.lag(0.1)).wrap(180.neg,180),
 (silver1.wrap(90.neg,90)+cell_el.lag(0.1)).wrap(90.neg,90));
@@ -96,10 +102,11 @@ out2=VBAP.ar(6,FreeVerb.ar(sig2,mix,room,mul:1),~b.bufnum,(silver2+cell_az.lag(0
 (silver2.wrap(90.neg,90)+cell_el.lag(0.1)).wrap(90.neg,90));
 
 
-	Out.ar(2,LeakDC.ar(BPF.ar(out1,band_osc1.lag(0.1),1),mul:24)*gain);
-	Out.ar(2,LeakDC.ar(BPF.ar(out2,band_osc2.lag(0.1),1),mul:24)*gain);
-	Out.ar(0,Pan2.ar(LeakDC.ar(BPF.ar(sig1,band_osc1.lag(0.1),1),mul:6)*gain,(linex+cell_l).wrap(1.neg,1)));
-	Out.ar(0,Pan2.ar(LeakDC.ar(BPF.ar(sig2,band_osc2.lag(0.1),1),mul:6)*gain,(liney+cell_r).wrap(1.neg,1)));
+Out.ar(2,LeakDC.ar(out1,mul:24)*gain);
+Out.ar(2,LeakDC.ar(out2,mul:24)*gain);
+
+Out.ar(0,Pan2.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:12)*gain,(linex+cell_l.lag(0.1)).wrap(1.neg,1)));
+Out.ar(0,Pan2.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:12)*gain,(liney+cell_r.lag(0.1)).wrap(1.neg,1)));
 
 gold=(gold+(360-gold_r)).wrap(180.neg,180).round(0.0001);
 silver1=(silver1+(360-silver_r)).wrap(180.neg,180).round(0.0001);
@@ -109,8 +116,7 @@ silver3=(silver3+(360-silver_r)).wrap(180.neg,180).round(0.0001);
 }).add;);
 
 1.wait;
-~synth=Synth.new(\synth,[\gain,1,\tone,496,\low,16256/2,\high,28,
-			                     \pan_speed,1,\band,0.01,\lamdoma,1,\brain,0.5]).register;//s.record
+~synth=Synth.new(\synth,[\gain,1,\tone,496,\low,16256/2,\high,28,\pan_speed,0.01,\band,0.01,\lamdoma,1,\brain,0.5]).register;//s.record
 1.wait;
 
 	(
@@ -120,7 +126,7 @@ MIDIIn.connectAll;
 MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
 		var gain;
 	//[val, num, chan, src].postln;
-	gain=val.linlin(0,127,0,6).round(0.000001);
+	gain=val.linlin(0,127,0,24).round(0.000001);
 		gain.postln;
 		if(~synth.isPlaying,{~synth.set(\gain,gain)});
 },26);
@@ -136,7 +142,7 @@ MIDIdef.cc(\midi_pot2,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot3,{ |val, num, chan, src|
 		var pan;
-	pan=val.linlin(0,127,0.001,12).round(0.00001);
+	pan=val.linlin(0,127,0.0001,1).round(0.00001);
 		pan.postln;
 		if(~synth.isPlaying,{~synth.set(\pan_speed,pan)});
 },28);
@@ -153,7 +159,7 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 		var band;
-	band=val.linlin(0,127,0.1,1000).round(0.00001);
+	band=val.linlin(0,127,0.001,100).round(0.00001);
 		band.postln;
 		if(~synth.isPlaying,{~synth.set(\band,band)});
 },30);

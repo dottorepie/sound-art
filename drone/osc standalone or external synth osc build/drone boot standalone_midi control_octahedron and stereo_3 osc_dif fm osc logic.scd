@@ -210,7 +210,7 @@ silver3=(silver3+(360-silver_r)).wrap(180.neg,180).round(0.0001);
 1.wait;
 ~synth=Synth.new(\synth,[\gain,100,\tone,0,\low,(496*16*(7/4)),\high,(496*8*(6/5)),\pan_speed,(496*16).neg,\band,(56*8).neg,\lamdoma,10,\brain,4]).register;//s.record
 1.wait;
-		2.pow((496*16*(7/4))/992)
+
 	(
 MIDIClient.init;
 MIDIIn.connectAll;

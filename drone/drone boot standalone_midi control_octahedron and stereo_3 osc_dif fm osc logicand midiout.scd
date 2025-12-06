@@ -144,10 +144,10 @@ phase=gold.degrad;
 					fm=LFNoise1.ar(amp,m);
 freq=freq+fm;
 
-band_osc1=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/56),phase:90.degrad).range(56*2,16256);
-band_osc2=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/56),phase:90.degrad).range(56*2,16256);
-band_osc3=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/56),phase:90.degrad.neg).range(56*2,16256);
-band_osc4=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/56),phase:90.degrad.neg).range(56*2,16256);
+band_osc1=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/992),phase:90.degrad).range(56*2,16256);
+band_osc2=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/992),phase:90.degrad).range(56*2,16256);
+band_osc3=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/992),phase:90.degrad.neg).range(56*2,16256);
+band_osc4=SinOsc.kr(freq.reciprocal*2.pow(band.lag(0.1)/992),phase:90.degrad.neg).range(56*2,16256);
 
 linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
@@ -188,7 +188,7 @@ sig3=BPF.ar(BRF.ar(
 band_osc4.lag(0.1),2.sqrt.reciprocal),band_osc2.lag(0.1),2.sqrt.reciprocal);*/
 
 sig1=LPF.ar(sig1,2.pow(low.lag(0.1)/992)); sig2=LPF.ar(sig2,2.pow(low.lag(0.1)/992)); sig3=LPF.ar(sig3,2.pow(low.lag(0.1)/992));
-sig1=HPF.ar(sig1,2.pow(high.lag(0.1)/992)); sig2=HPF.ar(sig2,2.pow(high.lag(0.1)/992)); sig3=LPF.ar(sig3,2.pow(high.lag(0.1)/992));
+sig1=HPF.ar(sig1,2.pow(high.lag(0.1)/992)); sig2=HPF.ar(sig2,2.pow(high.lag(0.1)/992)); sig3=HPF.ar(sig3,2.pow(high.lag(0.1)/992));
 
 cell_az=Osc.kr(~w.bufnum,2.pow(pan_speed.lag(0.1)/992),phase:0.degrad).range(180.neg,180);
 cell_el=SinOsc.kr(2.pow(pan_speed.lag(0.1)/992),phase:90.degrad).range(90.neg,90);
@@ -268,7 +268,7 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 		var band;
-	band=val.linlin(0,127,(56*8).neg,56*32).round(1).asInteger;
+	band=val.linlin(0,127,(496*8).neg,496*32).round(1).asInteger;
 		band.postln;
 		if(~synth.isPlaying,{~synth.set(\band,band)});
 },30);

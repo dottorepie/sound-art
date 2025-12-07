@@ -16,7 +16,19 @@ var freq= 100;
 //////////////////////////////////////////////
 
 
-
+(
+s.options.numWireBufs = 1024*2;
+s.options.numOutputBusChannels=4;
+s.options.numInputBusChannels=0;
+s.options.memSize = 8192*4;
+s.options.blockSize = 64;
+s.options.maxNodes = 1024 * 2;
+//s.options.sampleRate= 44100;
+//s.recHeaderFormat="aiff";
+//s.recSampleFormat ="int16";
+//s.recChannels = 8;
+s.boot;
+)
 
 
 // sig1=BPF.ar(BRF.ar(
@@ -67,7 +79,7 @@ s.boot;
 var signal,wt,m=0,amp,ph=0;
 
 ~level1=32.collect{m=m+1;amp=m.reciprocal};
-		signal=Signal.sineFill(1024,~level1,[0]);
+		signal=Signal.sineFill(1024,~level1,[ph]);
 
 wt = signal.asWavetable;
 ~w_function.loadCollection(wt);
@@ -76,20 +88,24 @@ signal.plot;
 );
 
 (
-~function=Env([1.neg,1],[1],[0]).asSignal(1025);
+~w_function= Buffer.alloc(s,2048);
+var ph=0;
+~function=Env([1.neg,1],[1],[0]).asSignal(1024);
 ~function=~function+(
-	Signal.sineFill(1025,(0!3)++[0,0,0,1,1,1].scramble,{rrand(0,2pi)}!9)/4;
+	Signal.sineFill(1024,[0,0,0,1,1,1].scramble,[ph])/4;
 );
 ~function=~function.normalize;
 ~function.plot;
 ~w_function.loadCollection(~function.asWavetableNoWrap);
+//~w_function=Buffer.loadCollection(s,~function);
 )
 
 
+
 (
-var freq=220,b_x=50;
-//{(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),0.degrad,0.1),mul:0.1),440)*SinOsc.ar(220-b_x),0.degrad,0.1)}.play;
-{LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),0.degrad,0.1),mul:0.1),440)}.play;
+var freq=220,b_x=50,low=10000;
+//{Out.ar(2,(LPF.ar(Shaper.ar(~w_function.bufnum,(Saw.ar(freq,1)*SinOsc.ar(freq-b_x,0.degrad,1)),mul:0.1),low)))}.play;
+{Out.ar(2,(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),0.degrad,0.8),mul:0.1),low)))}.play;
 )
 
 
@@ -145,7 +161,7 @@ signal.plot;
 
 (
 var freq=220,b_x=50.bufpos;
-//{(LPF.ar(VOsc.ar(bufpos:,(freq),mul:1).abs,440)*SinOsc.ar(freq-(b_x),0.degrad,1))}.play
-//{(LPF.ar(VOsc.ar(bufpos:SinOsc.ar(freq-(b_x),0.degrad,1).range(0,1),(freq),mul:1).abs,440))}.play;
-{(LPF.ar(VOsc.ar(bufpos:MouseX.kr(0,1),(freq),mul:1).abs,440)*SinOsc.ar(freq-(b_x),0.degrad,1))}.play;
+//{Out.ar(2,(LPF.ar(VOsc.ar(bufpos:,(freq),mul:1).abs,440)*SinOsc.ar(freq-(b_x),0.degrad,1)))}.play
+//{Out.ar(2,(LPF.ar(VOsc.ar(bufpos:SinOsc.ar(freq-(b_x),0.degrad,1).range(0,1),(freq),mul:1).abs,440)))}.play;
+{Out.ar(2,(LPF.ar(VOsc.ar(bufpos:MouseX.kr(0,1),(freq),mul:1).abs,440)*SinOsc.ar(freq-(b_x),0.degrad,1)))}.play;
 )

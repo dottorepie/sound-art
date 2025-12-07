@@ -128,9 +128,9 @@ axis=i+j+k;
 				octahedron=Spherical(2.pow(lamdoma.lag(0.1)/56),Select.kr(brain.lag(0.1),~az),Select.kr(brain.lag(0.1),~el));
 
 
-b_x=2.pow(octahedron.x.abs/56);
-b_y=2.pow(octahedron.y.abs/56);
-b_z=2.pow(octahedron.z.abs/56);
+b_x=octahedron.x;
+b_y=octahedron.y;
+b_z=octahedron.z;
 
 
 bank.do{
@@ -160,23 +160,23 @@ linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
 
 sig1=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq/(b_x),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq/(b_y),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq/(b_z),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp),low/16)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 
 /*sig1=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq/(b_x),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq/(b_y),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq/(b_z),phase,amp)),
+(LPF.ar(SoundIn.ar(0,mul:amp).abs,low/4)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);*/
 
 sig1=LPF.ar(sig1,2.pow(low.lag(0.1)/992)); sig2=LPF.ar(sig2,2.pow(low.lag(0.1)/992)); sig3=LPF.ar(sig3,2.pow(low.lag(0.1)/992));
@@ -328,10 +328,10 @@ MIDIdef.cc(\midi_switch6,{ |val, num, chan, src|
 },19);
 	);
 
-	(
+		(
 MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 		var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=0,lamdoma=0);
+				if(val>0,lamdoma=10,lamdoma=10);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },20);
@@ -339,7 +339,7 @@ MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		 var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=(56*1),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=20,lamdoma=200);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },21);
@@ -347,7 +347,7 @@ MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 		var lamdoma, n=2, a=1;
-					if(val>0,lamdoma=(56*2),lamdoma=(28*((n+a)/n)));
+					if(val>0,lamdoma=30,lamdoma=30);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },22);
@@ -356,7 +356,7 @@ MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
          var lamdoma, n=3, a=1;
-				if(val>0,lamdoma=(56*3),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=40,lamdoma=40);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },23);
@@ -364,7 +364,7 @@ MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 		var lamdoma, n=4, a=1;
-				if(val>0,lamdoma=(56*4),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=50,lamdoma=50);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },24);
@@ -372,7 +372,7 @@ MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 					(
 MIDIdef.cc(\midi_switch12,{ |val, num, chan, src|
 		var lamdoma, n=5, a=1;
-					if(val>0,lamdoma=(56*5),lamdoma=(28*((n+a)/n)));
+					if(val>0,lamdoma=60,lamdoma=60);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },25);

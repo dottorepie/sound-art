@@ -108,17 +108,17 @@ wt = signal.asWavetable;
 ~w.loadCollection(wt);
 //signal.plot;
 		}.value;
-				~w_function= Buffer.alloc(s,2048);
-		{
-var signal,wt,m=0,amp,ph=0;
-
-~level1=32.collect{m=m+1;amp=m.reciprocal};
-		signal=Signal.sineFill(1024,~level1,[0]);
-
-wt = signal.asWavetable;
-~w_function.loadCollection(wt);
-//signal.plot;
-		}.value;
+(
+~w_function= Buffer.alloc(s,2048);
+~function=Env([1.neg,1],[1],[0]).asSignal(1024);
+~function=~function+(
+	Signal.sineFill(1024,Array.fill(32, {(1+2.sqrt).rand}),[0])/4;
+);
+~function=~function.normalize;
+~function.plot;
+~w_function.loadCollection(~function.asWavetableNoWrap);
+//~w_function=Buffer.loadCollection(s,~function);
+)
 
 
 (
@@ -171,23 +171,23 @@ linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
 
 sig1=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_x),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_y),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_z),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 
 /*sig1=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_x),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/4)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_y),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/4)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_z),phase,amp)),
+(LPF.ar(Shaper.ar(~w_function.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/4)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);*/
 
 sig1=LPF.ar(sig1,2.pow(low.lag(0.1)/992)); sig2=LPF.ar(sig2,2.pow(low.lag(0.1)/992)); sig3=LPF.ar(sig3,2.pow(low.lag(0.1)/992));

@@ -1,9 +1,4 @@
-/////shaper (shaping of a sine via a transfer function) follows the logic eg. lamdoma (1...2), y=(x+a)/x, small interval between oscillators, fm logic, between sine as lowHz carrier and another waveform (AC/DC) as modulator
-///in 2.pow(n/12) of interval range n<=2
-///eg. when triangle wave at AC or saw wave at DC or pulse at DC  are carried by a sine then the sine is shaped acccording to the former modulator wave
-/*({Out.ar(0,Saw.ar(3*64).abs)}.play;
-{Out.ar(0,SinOsc.ar(2*64))}.play)*/
-////shaper is with abs or not abs if signal AC. saw abs, lftri no abs
+
 
 (
 (
@@ -13,7 +8,7 @@ s.options.numInputBusChannels=0;
 s.options.memSize = 8192*4;
 s.options.blockSize = 64;
 s.options.maxNodes = 1024 * 2;
-s.makeGui(w);
+//s.makeGui(w);
 //s.options.sampleRate= 44100;
 //s.recHeaderFormat="aiff";
 //s.recSampleFormat ="int16";
@@ -118,13 +113,13 @@ SynthDef.new(\synth,{
 	var freq,fund,n=0,m,phase,interval,alpha,cell_az,cell_el,num=5;
 	var sig1,sig2,first=28,bank=6,out1,out2,fm,band_osc1,band_osc2,amp,ton;
 	var linex,liney,silver3=45,cell_l,cell_r,band_osc3,band_osc4;
-	var octahedron,sig3,out3,cell_tria,b_x,b_y,b_z,rq=0.25;
+	var octahedron,sig3,out3,cell_tria,b_x,b_y,b_z,rq=0.1;
 	var xyz=[1,1,1].normalizeSum.sqrt,axis,q,rotor,rotation,mout;
     var i=Quaternion(0, xyz.[0], 0, 0),j=Quaternion(0, 0, xyz.[1], 0),k=Quaternion(0, 0, 0, xyz.[2]);
 
 axis=i+j+k;
 
-octahedron=Spherical(lamdoma.lag(0.1),Select.kr(brain.lag(0.1),~az),Select.kr(brain.lag(0.1),~el));
+octahedron=Spherical(10*lamdoma.lag(0.1),Select.kr(brain.lag(0.1),~az),Select.kr(brain.lag(0.1),~el));
 
 
 b_x=octahedron.x;
@@ -334,7 +329,7 @@ MIDIdef.cc(\midi_switch6,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 		var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=10,lamdoma=10);
+				if(val>0,lamdoma=1,lamdoma=1);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },20);
@@ -342,7 +337,7 @@ MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		 var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=20,lamdoma=200);
+				if(val>0,lamdoma=2,lamdoma=2);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },21);
@@ -350,7 +345,7 @@ MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 		var lamdoma, n=2, a=1;
-					if(val>0,lamdoma=30,lamdoma=30);
+					if(val>0,lamdoma=3,lamdoma=3);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },22);
@@ -359,7 +354,7 @@ MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
          var lamdoma, n=3, a=1;
-				if(val>0,lamdoma=40,lamdoma=40);
+				if(val>0,lamdoma=4,lamdoma=4);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },23);
@@ -367,7 +362,7 @@ MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 		var lamdoma, n=4, a=1;
-				if(val>0,lamdoma=50,lamdoma=50);
+				if(val>0,lamdoma=5,lamdoma=5);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },24);
@@ -375,7 +370,7 @@ MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 					(
 MIDIdef.cc(\midi_switch12,{ |val, num, chan, src|
 		var lamdoma, n=5, a=1;
-					if(val>0,lamdoma=60,lamdoma=60);
+					if(val>0,lamdoma=6,lamdoma=6);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },25);

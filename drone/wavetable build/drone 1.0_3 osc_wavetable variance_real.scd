@@ -87,12 +87,12 @@ angle=(angle+((180*2.pow(n/12))-((180*2.pow(n/12))/1.6180339887499))).wrap(0,(18
 );*/
 		/////check value range
 		/*(var m,a,b,c, n=0; {m=MouseX.kr(0,32400).round(1).asInteger;
-			a=Spherical(2.pow((56*8)/56),Select.kr(m,~az),Select.kr(m,~el)).z.abs;
-			b=Spherical(2.pow((56*8)/56),Select.kr(m,~az),Select.kr(m,~el)).x.abs;
-			c=Spherical(2.pow((56*8)/56),Select.kr(m,~az),Select.kr(m,~el)).y.abs;
-			2.pow(a/12).poll;
-			2.pow(b/12).poll;
-			2.pow(c/12).poll;
+			a=Spherical(28,Select.kr(m,~az),Select.kr(m,~el)).z.abs;
+			b=Spherical(28,Select.kr(m,~az),Select.kr(m,~el)).x.abs;
+			c=Spherical(28,Select.kr(m,~az),Select.kr(m,~el)).y.abs;
+			2.pow(a/12).round(0.001).poll;
+			2.pow(b/12).round(0.001).poll;
+			2.pow(c/12).round(0.001).poll;
 		}.play
 		)*/
 
@@ -182,23 +182,23 @@ linex=exp(Complex(0,1)*silver3.degrad).real.abs;
 liney=exp(Complex(0,1)*silver3.degrad).imag.abs.neg;
 
 sig1=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq/(b_x),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq/(b_y),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq/(b_z),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp),low/16)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 
 /*sig1=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq/(b_x),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_x),phase,amp)),
 	band_osc3.lag(0.1),rq),band_osc1.lag(0.1),rq);
 sig2=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq/(b_y),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_y),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);
 sig3=BPF.ar(BRF.ar(
-(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq/(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq/(b_z),phase,amp)),
+(LPF.ar(Shaper.ar(.bufnum,SinOsc.ar(freq-(b_x),phase,amp),mul:amp).abs,low/4)*SinOsc.ar(freq-(b_z),phase,amp)),
 band_osc4.lag(0.1),rq),band_osc2.lag(0.1),rq);*/
 
 sig1=LPF.ar(sig1,2.pow(low.lag(0.1)/992)); sig2=LPF.ar(sig2,2.pow(low.lag(0.1)/992)); sig3=LPF.ar(sig3,2.pow(low.lag(0.1)/992));
@@ -353,7 +353,7 @@ MIDIdef.cc(\midi_switch6,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 		var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=0,lamdoma=0);
+				if(val>0,lamdoma=10,lamdoma=10);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },20);
@@ -361,7 +361,7 @@ MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		 var lamdoma, n=1, a=1;
-				if(val>0,lamdoma=(56*1),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=20,lamdoma=200);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },21);
@@ -369,7 +369,7 @@ MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 		var lamdoma, n=2, a=1;
-					if(val>0,lamdoma=(56*2),lamdoma=(28*((n+a)/n)));
+					if(val>0,lamdoma=30,lamdoma=30);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },22);
@@ -378,7 +378,7 @@ MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
 	(
 MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
          var lamdoma, n=3, a=1;
-				if(val>0,lamdoma=(56*3),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=40,lamdoma=40);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },23);
@@ -386,7 +386,7 @@ MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 		var lamdoma, n=4, a=1;
-				if(val>0,lamdoma=(56*4),lamdoma=(28*((n+a)/n)));
+				if(val>0,lamdoma=50,lamdoma=50);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },24);
@@ -394,7 +394,7 @@ MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
 					(
 MIDIdef.cc(\midi_switch12,{ |val, num, chan, src|
 		var lamdoma, n=5, a=1;
-					if(val>0,lamdoma=(56*5),lamdoma=(28*((n+a)/n)));
+					if(val>0,lamdoma=60,lamdoma=60);
 		lamdoma.postln;
 		if(~synth.isPlaying,{~synth.set(\lamdoma,lamdoma)});
 },25);

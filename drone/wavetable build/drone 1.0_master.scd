@@ -81,7 +81,7 @@ angle=(angle+((180*2.pow(n/12))-((180*2.pow(n/12))/1.6180339887499))).wrap(0,(18
 }.value;
 );
 		/////check value range
-		(var m,a,b,c; {m=MouseX.kr(0,32400).round(1).asInteger;
+		/*(var m,a,b,c; {m=MouseX.kr(0,32400).round(1).asInteger;
 			a=Spherical(60,Select.kr(m,~az),Select.kr(m,~el)).z.abs;
 			b=Spherical(60,Select.kr(m,~az),Select.kr(m,~el)).x.abs;
 			c=Spherical(60,Select.kr(m,~az),Select.kr(m,~el)).y.abs;
@@ -89,7 +89,7 @@ angle=(angle+((180*2.pow(n/12))-((180*2.pow(n/12))/1.6180339887499))).wrap(0,(18
 			(2.pow(b/12)/50).poll;
 			(2.pow(c/12)/50).poll;
 		}.play
-		)
+		)*/
 
 //////saw wavetable
 		~w= Buffer.alloc(s,2048);

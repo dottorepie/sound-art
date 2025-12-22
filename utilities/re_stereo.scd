@@ -87,8 +87,8 @@ s.record(duration:(10*60)+7);
 )
 
 (
-~c1 = Buffer.read(s,"/Users/amimid/Music/SuperCollider Recordings/SC_251222_194646.wav");
-~c2 = Buffer.read(s,"/Users/amimid/Music/SuperCollider Recordings/SC_251222_195800.wav");
+~c1 = Buffer.read(s,);
+~c2 = Buffer.read(s,);
 ~c3 = Buffer.read(s,);
 
 )

@@ -94,7 +94,7 @@ s.record(duration:(10*60)+7);
 )
 
 (
-{Out.ar(0,PlayBuf.ar(1, ~c1.bufnum, BufRateScale.kr(~c1.bufnum), loop: 0, doneAction:0))}.play;
-{Out.ar(0,PlayBuf.ar(1, ~c2.bufnum, BufRateScale.kr(~c2.bufnum), loop: 0, doneAction:0))}.play;
-{Out.ar(0,PlayBuf.ar(1, ~c3.bufnum, BufRateScale.kr(~c3.bufnum), loop: 0, doneAction:0))}.play;
+{Out.ar(0,PlayBuf.ar(2, ~c1.bufnum, BufRateScale.kr(~c1.bufnum), loop: 0, doneAction:0))}.play;
+{Out.ar(0,PlayBuf.ar(2, ~c2.bufnum, BufRateScale.kr(~c2.bufnum), loop: 0, doneAction:0))}.play;
+{Out.ar(0,PlayBuf.ar(2, ~c3.bufnum, BufRateScale.kr(~c3.bufnum), loop: 0, doneAction:0))}.play;
 )

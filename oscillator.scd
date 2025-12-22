@@ -12,9 +12,8 @@
 Buffer.freeAll;
 ~w= Buffer.alloc(s,~bufferSize);
 		{
-	var signal,wt,ph,n=1.neg;
-	//Signal.sineFill(1024,[6,12,28,496,8128]
-	signal=Signal.sineFill(~signalSize,~array);
+	var signal,wt;
+	signal=Signal.sineFill(~signalSize,~array,~ph);
 
 wt = signal.asWavetable;
 ~w.loadCollection(wt);

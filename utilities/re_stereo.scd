@@ -16,16 +16,6 @@ Buffer.freeAll;
 // ,channels:1);
 )
 
-///mixdown
-(
-~c1 = Buffer.readChannel(s,,channels:0 );
-~c2 = Buffer.readChannel(s,,channels:1 );
-~c3 = Buffer.readChannel(s,,channels:2 );
-~c4 = Buffer.readChannel(s,,channels:3 );
-~c5 = Buffer.readChannel(s,,channels:4 );
-~c6 = Buffer.readChannel(s,,channels:5 );
-~c7 = Buffer.readChannel(s,,channels:6 );
-~c8 = Buffer.readChannel(s,,channels:7 );
 
 
 (

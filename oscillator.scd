@@ -30,6 +30,16 @@ var n=1.neg;
 ~signalSize = 2048*8;
 )
 
+/////sawtooth  method
+(
+~n=0;~array=512.collect{~n=~n+1;};
+//~a=(0-(pi/256)); ~ph=512.collect{~a=~a+(pi/256);};
+~ph=[0];
+~bufferSize = 4096*8;
+~signalSize = 2048*8;
+)
+
+/////////wavetable
 (
 Buffer.freeAll;
 ~w= Buffer.alloc(s,~bufferSize);
@@ -46,8 +56,8 @@ signal.plot;
 
 (
 var freq=6*32, b=1,amp=1/20;
-{Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:100).abs*SinOsc.ar(freq,phase:0.degrad)),freq*64,amp))}.play;
-{Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:100).abs*SinOsc.ar(freq,phase:90.degrad)),freq*64,amp))}.play;
+{Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:100).abs*SinOsc.ar(freq,phase:0.degrad)),freq,amp))}.play;
+{Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:100).abs*SinOsc.ar(freq,phase:90.degrad)),freq,amp))}.play;
 )
 
 

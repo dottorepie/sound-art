@@ -191,9 +191,9 @@ sig3=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq3,phase:phase3,mul:100).abs*Sin
 cell_az=Osc.kr(~w.bufnum,2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,360);
 cell_el=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(90.neg,90);
 
-cell_l=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:0.degrad)).range(0,1);
-cell_r=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad)).range(0,1.neg);
-cell_tria=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:45.degrad);
+cell_l=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,1);
+cell_r=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(0,1.neg);
+cell_tria=(2.pow(pan_speed.lag(0.01)/992)).wrap(1,1.neg);
 
 out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,(silver1+cell_az.lag(0.01)).wrap(0,360),
 (silver1.wrap(90.neg,90)+cell_el.lag(0.01)).wrap(90.neg,90));

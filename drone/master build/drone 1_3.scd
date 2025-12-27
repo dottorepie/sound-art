@@ -147,7 +147,7 @@ SynthDef.new(\synth,{
 	var octahedron,sig3,out3,cell_tria,b_x,b_y,b_z,tetrahedron;
 	var magx,magy,magz,magqx,magqy,mod_angle;
 	var mod_angle1,mod_anglez,mx,my,mz,mqx,mqy;
-	var spread=1,m=9,mq=(m-1),rq=1,b=0,f=1,choice;
+	var spread=1,m=9,mq=(m-1),rq=0.1,b=0,f=1,choice;
 	//var xyz=[1,1,1].normalizeSum.sqrt,axis,q,rotor,rotation;
   //  var i=Quaternion(0, xyz.[0], 0, 0),j=Quaternion(0, 0, xyz.[1], 0),k=Quaternion(0, 0, 0, xyz.[2]);
 
@@ -162,9 +162,9 @@ b_x=octahedron.x;
 b_y=octahedron.y;
 b_z=octahedron.z;
 
-mod_angle=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),0.degrad).range(90.neg.degrad,90.degrad);
-mod_angle1=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),90.degrad).range(90.neg.degrad,90.degrad);
-mod_anglez=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),45.degrad).range(90.neg.degrad,90.degrad);
+mod_angle=SinOsc.ar(2.pow(pan_speed.lag(0.01)/992),0.degrad).range(90.neg.degrad,90.degrad);
+mod_angle1=SinOsc.ar(2.pow(pan_speed.lag(0.01)/992),90.degrad).range(90.neg.degrad,90.degrad);
+mod_anglez=SinOsc.ar(2.pow(pan_speed.lag(0.01)/992),45.degrad).range(90.neg.degrad,90.degrad);
 
 bank.do{
 
@@ -245,9 +245,9 @@ band_osc3.lag(0.1),rq),band_osc6.lag(0.1),rq);
 cell_az=Osc.kr(~w.bufnum,2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,360);
 cell_el=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(90.neg,90);
 
-cell_l=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,1);
-cell_r=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(0,1.neg);
-cell_tria=Saw.kr(2.pow(pan_speed.lag(0.01)/992));
+cell_l=SinOsc.ar(mqx,phase:0.degrad).range(0,1);
+cell_r=SinOsc.ar(mqy,phase:90.degrad).range(0,1.neg);
+cell_tria=SinOsc.ar(mz,phase:45.degrad);
 
 out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
 (tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
@@ -268,9 +268,9 @@ Out.ar(2,Limiter.ar(LeakDC.ar(out3,mul:1)*gain,room));
 //Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:1)*gain,room),(liney+cell_r.lag(0.01)).wrap(0,1.neg)));
 //Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:1)*gain,room),cell_tria.lag(0.01)));
 
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:1)*gain,room),mqx.lag(0.01).wrap(0,1)));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:1)*gain,room),mqy.lag(0.01).neg.wrap(0,1.neg)));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:1)*gain,room),(cell_tria+mz.lag(0.01)).wrap(1.neg,1)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:1)*gain,room),cell_l.lag(0.01)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:1)*gain,room),cell_r.lag(0.01)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:1)*gain,room),(cell_tria)));
 			}
 }).add;);
 
@@ -303,7 +303,7 @@ MIDIdef.cc(\midi_pot2,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot3,{ |val, num, chan, src|
 		var pan;
-		pan=val.linlin(0,127,(992*4).neg,0).round(0.00001).round(1).asInteger;
+		pan=val.linlin(0,127,(992*4).neg,(992*4)).round(0.00001).round(1).asInteger;
 		pan.postln;
 		if(~synth.isPlaying,{~synth.set(\pan_speed,pan)});
 },28);

@@ -104,8 +104,8 @@ angle=(angle+(360-(360/silver_r))).wrap(0,360);
 ////// wavetables
 
 		(
-~n=1.neg;~array=16256.collect{~n=~n+1;2.pow(~n/16256)};
-~a=(0-(pi/8128)); ~ph=16256.collect{~a=~a+(pi/8128);};
+~n=1.neg;~array=992.collect{~n=~n+1;2.pow(~n/992)};
+~a=(0-(pi/496)); ~ph=992.collect{~a=~a+(pi/496);};
 ~bufferSize = 4096*8;
 ~signalSize = 2048*8;
 );
@@ -142,12 +142,12 @@ SynthDef.new(\synth,{
 	arg gain=1,low=992,high=0,tone=0,band=1,lamdoma=1,brain=1,pan_speed=1;
 	var gold=45,gold_r=((1+5.sqrt)/2),silver_r=(1+2.sqrt),room=1,mix=1;
 	var freq1,freq2,freq3,fund,phase1,phase2,phase3,amp1,amp2,amp3,alpha,cell_az,cell_el;
-	var sig1,sig2,first=32*(9/8),bank=4,out1,out2,fm,band_osc1,band_osc2,ton,freq;
+	var sig1,sig2,first=32*(9/8),bank=2,out1,out2,fm,band_osc1,band_osc2,ton,freq;
 	var linex,liney,cell_l,cell_r,band_osc3,band_osc4,band_osc5,band_osc6;
 	var octahedron,sig3,out3,cell_tria,b_x,b_y,b_z,tetrahedron;
 	var magx,magy,magz,magqx,magqy,mod_angle;
-	var mod_angle1,mod_anglez,tetrh_mod,mx,my,mz,mqx,mqy;
-	var spread=1,m=3,mq=(m-1),rq=0.1,b=0,f=1,choice;
+	var mod_angle1,mod_anglez,mx,my,mz,mqx,mqy;
+	var spread=2,m=9,mq=(m-1),rq=0.2,b=0,f=1,choice;
 	//var xyz=[1,1,1].normalizeSum.sqrt,axis,q,rotor,rotation;
   //  var i=Quaternion(0, xyz.[0], 0, 0),j=Quaternion(0, 0, xyz.[1], 0),k=Quaternion(0, 0, 0, xyz.[2]);
 
@@ -198,13 +198,11 @@ sin((tetrahedron.phi.round(0.00001)*(mq-1)).wrap((pi/2).neg,(pi/2)))))*
 cos((tetrahedron.phi.round(0.00001)).wrap((pi/2).neg,(pi/2))))))).rho/(2.sqrt)).pow(spread);
 	);
 
-					mx=(Cartesian(magx,0,0).rho);
-					mqx=(Cartesian(magqx,0,0).rho);
-					my=(Cartesian(0,magy,0).rho);
-					mqy=(Cartesian(0,magqy,0).rho);
-					mz=(Cartesian(0,0,magz).rho);
-
-					tetrh_mod=Spherical(mx,tetrahedron.theta,tetrahedron.phi);
+					mx=(Cartesian(magx.value,0,0).rho);
+					mqx=(Cartesian(magqx.value,0,0).rho);
+					my=(Cartesian(0,magy.value,0).rho);
+					mqy=(Cartesian(0,magqy.value,0).rho);
+					mz=(Cartesian(0,0,magz.value).rho);
 
 linex=Complex(tetrahedron.theta.linlin(180.neg.degrad,180.degrad,1.neg,1),tetrahedron.phi.linlin(90.neg.degrad,90.degrad,1.neg,1)).real.abs;
 liney=Complex(tetrahedron.theta.linlin(180.neg.degrad,180.degrad,1.neg,1),tetrahedron.phi.linlin(90.neg.degrad,90.degrad,1.neg,1)).imag.abs.neg;
@@ -236,50 +234,49 @@ band_osc4=SinOsc.kr(b_x*2.pow(band.lag(0.01)/992),phase:180.degrad).range(496,16
 band_osc5=SinOsc.kr(b_y*2.pow(band.lag(0.01)/992),phase:90.degrad.neg).range(496,16256);
 band_osc6=SinOsc.kr(b_z*2.pow(band.lag(0.01)/992),phase:45.degrad.neg).range(496,16256);
 
-sig1=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq1+b,phase:phase1,mul:100).abs*SinOsc.ar(freq1+b,phase:phase1)),freq1*2.pow(low.lag(0.01)/992),amp1),
+sig1=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq1+mx,phase:phase1,mul:100).abs*SinOsc.ar(freq1+mx,phase:phase1)),freq1*2.pow(low.lag(0.01)/992),amp1),
 band_osc1.lag(0.1),rq),band_osc4.lag(0.1),rq);
-sig2=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq2+b,phase:phase2,mul:100).abs*SinOsc.ar(freq2+b,phase:phase2)),freq2*2.pow(low.lag(0.01)/992),amp2),
+sig2=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq2+my,phase:phase2,mul:100).abs*SinOsc.ar(freq2+my,phase:phase2)),freq2*2.pow(low.lag(0.01)/992),amp2),
 band_osc2.lag(0.1),rq),band_osc5.lag(0.1),rq);
-sig3=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq3+b,phase:phase3,mul:100).abs*SinOsc.ar(freq3+b,phase:phase3)),freq3*2.pow(low.lag(0.01)/992),amp3),
+sig3=BPF.ar(BRF.ar(LPF.ar((Osc.ar(~w1.bufnum,freq3+mz,phase:phase3,mul:100).abs*SinOsc.ar(freq3+mz,phase:phase3)),freq3*2.pow(low.lag(0.01)/992),amp3),
 band_osc3.lag(0.1),rq),band_osc6.lag(0.1),rq);
 
 
-//cell_az=Osc.kr(~w.bufnum,2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,360);
-//cell_el=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(90.neg,90);
+cell_az=Osc.kr(~w.bufnum,2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,360);
+cell_el=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(90.neg,90);
 
-//cell_l=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,1);
-//cell_r=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(0,1.neg);
-//cell_tria=(2.pow(pan_speed.lag(0.01)/992)).wrap(1,1.neg);
+cell_l=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:0.degrad).range(0,1);
+cell_r=SinOsc.kr(2.pow(pan_speed.lag(0.01)/992),phase:90.degrad).range(0,1.neg);
+cell_tria=(2.pow(pan_speed.lag(0.01)/992)).wrap(1,1.neg);
 
-//out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:tetrh_mod.x),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
-//(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
-//out2=VBAP.ar(6,FreeVerb.ar(sig2,mix,room,mul:tetrh_mod.y),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
-//(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
-//out3=VBAP.ar(6,FreeVerb.ar(sig3,mix,room,mul:tetrh_mod.z),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
-//(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
+out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
+(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
+out2=VBAP.ar(6,FreeVerb.ar(sig2,mix,room,mul:1),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
+(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
+out3=VBAP.ar(6,FreeVerb.ar(sig3,mix,room,mul:1),~b.bufnum,(tetrahedron.theta+cell_az.lag(0.01)).wrap(0,360),
+(tetrahedron.phi+cell_el.lag(0.01)).wrap(90.neg,90));
 
-out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
-out2=VBAP.ar(6,FreeVerb.ar(sig2,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
-out3=VBAP.ar(6,FreeVerb.ar(sig3,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
+//out1=VBAP.ar(6,FreeVerb.ar(sig1,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
+//out2=VBAP.ar(6,FreeVerb.ar(sig2,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
+//out3=VBAP.ar(6,FreeVerb.ar(sig3,mix,room,mul:1),~b.bufnum,tetrahedron.theta,tetrahedron.phi);
 
-Out.ar(2,Limiter.ar(LeakDC.ar(out1,mul:tetrh_mod.x)*gain,room));
-Out.ar(2,Limiter.ar(LeakDC.ar(out2,mul:tetrh_mod.y)*gain,room));
-Out.ar(2,Limiter.ar(LeakDC.ar(out3,mul:tetrh_mod.z)*gain,room));
+Out.ar(2,Limiter.ar(LeakDC.ar(out1,mul:1)*gain,room));
+Out.ar(2,Limiter.ar(LeakDC.ar(out2,mul:1)*gain,room));
+Out.ar(2,Limiter.ar(LeakDC.ar(out3,mul:1)*gain,room));
 
-//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:tetrh_mod.x)*gain,room),(linex+cell_l.lag(0.01)).wrap(0,1)));
-//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:tetrh_mod.y)*gain,room),(liney+cell_r.lag(0.01)).wrap(0,1.neg)));
-//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:tetrh_mod.z)*gain,room),cell_tria.lag(0.01)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:1)*gain,room),(linex+cell_l.lag(0.01)).wrap(0,1)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:1)*gain,room),(liney+cell_r.lag(0.01)).wrap(0,1.neg)));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:1)*gain,room),cell_tria.lag(0.01)));
 
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:tetrh_mod.x)*gain,room),(linex)));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:tetrh_mod.y)*gain,room),(liney)));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:tetrh_mod.z)*gain,room),0));
+//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix,room,mul:1),mul:(mx.lag(0.01)).poll)*gain,room),(linex)));
+//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix,room,mul:1),mul:mx.lag(0.01))*gain,room),(liney)));
+//Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix,room,mul:1),mul:mx.lag(0.01))*gain,room),0));
 			}
 }).add;);
 
 10.wait;
-~synth=Synth.new(\synth,[\gain,1,\tone,0,\low,0,\high,0,\pan_speed,(992*4).neg,\band,(992*4).neg,\lamdoma,1,\brain,4]).register;//s.record
+~synth=Synth.new(\synth,[\gain,1,\tone,0,\low,0,\high,0,\pan_speed,0,\band,(992*4).neg,\lamdoma,1,\brain,4]).register;//s.record
 2.wait;
-
 	(
 MIDIClient.init;
 MIDIIn.connectAll;
@@ -306,7 +303,7 @@ MIDIdef.cc(\midi_pot2,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot3,{ |val, num, chan, src|
 		var pan;
-		pan=val.linlin(0,127,(992*8).neg,992*4).round(0.00001).round(1).asInteger;
+		pan=val.linlin(0,127,(992*4).neg,(992*4)).round(0.00001).round(1).asInteger;
 		pan.postln;
 		if(~synth.isPlaying,{~synth.set(\pan_speed,pan)});
 },28);
@@ -324,7 +321,7 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 		(
 MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 		var band;
-	band=val.linlin(0,127,(992*4).neg,992*16).round(1).asInteger;
+	band=val.linlin(0,127,(992*4).neg,992*8).round(1).asInteger;
 		band.postln;
 		if(~synth.isPlaying,{~synth.set(\band,band)});
 },30);

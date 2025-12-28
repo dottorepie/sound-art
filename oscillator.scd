@@ -21,6 +21,13 @@ var n=1.neg;
 ~bufferSize = 4096*8;
 ~signalSize = 2048*8;
 )
+/////octaves
+(
+~n=496;~array=512.collect{~n=~n*2};
+~a=(0-(pi/8128)); ~ph=16256.collect{~a=~a+(pi/8128);};
+~bufferSize = 4096*8;
+~signalSize = 2048*8;
+)
 
 /////lamdoma method
 (
@@ -48,14 +55,14 @@ Buffer.freeAll;
 	signal=Signal.sineFill(~signalSize,~array,~ph);
 
 wt = signal.asWavetable;
-~w.loadCollection(wt);
+~w.loadCollection(wt);/
 signal.plot;
 		}.value;
 )
 
 
 (
-var freq=6*32, b=1,amp=1/20;
+var freq=6*32, b=1,amp=1;
 {Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:100).abs*SinOsc.ar(freq,phase:0.degrad)),freq,amp))}.play;
 {Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:100).abs*SinOsc.ar(freq,phase:90.degrad)),freq,amp))}.play;
 )

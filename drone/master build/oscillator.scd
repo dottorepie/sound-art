@@ -1,13 +1,15 @@
 ///perfect number sequence
+///note that there is a number for evety prime number of 0s to 1 like in the 10s, 100s,1000s,10000s,10000000s, 100000000000s and so on, but this symmetry breaks at
+///7 to 11 0s including nine 0s. Primes are weird i would say
 (
 ~primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71];
 (
 {
-var n=1.neg;
-~ps=5.collect{n=n+1;
-	2.pow(~primes.[n]-1)*(2.pow(~primes.[n])-1);
-};
-	~ps.asInteger;
+var n=1.neg,c;
+	~ps=8.collect{n=n+1; c=(2.pow(~primes.[n])-1).asInteger;
+		if(c.isPrime,2.pow(~primes.[n]-1)*(2.pow(~primes.[n])-1),nil);
+	}.reject(_.isNil);
+	~ps.asFloat;
 }.value
 )
 )
@@ -55,9 +57,12 @@ signal.plot;
 
 
 (
-var freq=6*32, b=1,amp=1/10;
-{Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:100).abs*SinOsc.ar(freq,phase:0.degrad)),freq*MouseX.kr(1,64).round(1),amp))}.play;
-{Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:100).abs*SinOsc.ar(freq,phase:90.degrad)),freq*MouseX.kr(1,64).round(1),amp))}.play;
+{
+	var freq=6*32, b=1,f=8,rz=100,amp=1;
+
+Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:rz).abs*SinOsc.ar(freq,phase:0.degrad)),freq*f.round(1),amp));
+Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:rz).abs*SinOsc.ar(freq,phase:90.degrad)),freq*f.round(1),amp));
+}.play;
 )
 
 

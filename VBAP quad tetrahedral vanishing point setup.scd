@@ -188,13 +188,13 @@ wt = signal.asWavetable;
 
 
 ({
-var sig,out1,out2,pan1,pan2,phase1,phase2,equlibrium,p_amp1=0.5,p_amp2=0.5,coordinate=0,angle,pan_az,pan_el;
+var sig,out1,out2,pan1,pan2,phase1,phase2,equlibrium,p_amp1=1,p_amp2=1,coordinate=0,angle,pan_az,pan_el;
 var pos1,pos2,sph,phase,freq=220,f=1,amp=1,sph1,sph2,angle1,angle2,az,el;
 
-equlibrium=180.degrad;
-phase1=0.degrad; phase2=(equlibrium-90.degrad).wrap2(180.0);
-pan1=SinOsc.ar(freq/8,phase:phase1,mul:p_amp1);
-pan2=SinOsc.ar(freq/8,phase:phase2,mul:p_amp2);
+equlibrium=pi;
+phase1=0.degrad; phase2=(equlibrium-90.degrad).wrap2(pi);
+pan1=SinOsc.ar(0.1,phase:phase1,mul:p_amp1);
+pan2=SinOsc.ar(0.1,phase:phase2,mul:p_amp2);
 
 		az=SinOsc.ar(1/2,0.degrad,pi);
 		el=SinOsc.ar(1/4,90.degrad,pi/2);

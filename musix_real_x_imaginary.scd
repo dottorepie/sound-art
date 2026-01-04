@@ -36,11 +36,23 @@ s.meter;
 ~i4 = Buffer.readChannel(s,"/Users/amimid/Music/SuperCollider Recordings/drone_1_2.wav",channels:1 );
 		);
 
+		(
+			{
+var steps = 7;
+var nVals;
+
+~nVals = (0..(steps-1)).collect { |i|
+    i.linexp(0, steps-1, 1, 461).round
+};
+			~nVals.asInteger;
+			}.value;
+		);
+
 (
 SynthDef.new(\re_im, {
 
 	arg amp1=1,amp2=1,amp3=1,amp4=1,amp5=1,amp6=1,amp7=1,amp1a=1,amp2a=1,amp3a=1,amp4a=1,amp5a=1,amp6a=1,amp7a=1;
-    var in1,in2,in3,in4,chain1,chain2,chain3,chain4;
+    var in1,in2,in3,in4,chain1,chain2,chain3,chain4,n=0;
 	var chain1rl,chain2rl,chain3rl,chain4rl,chain5rl,chain6rl,chain7rl;
 	var chain1rr,chain2rr,chain3rr,chain4rr,chain5rr,chain6rr,chain7rr;
 	var chain1il,chain2il,chain3il,chain4il,chain5il,chain6il,chain7il;
@@ -49,7 +61,7 @@ SynthDef.new(\re_im, {
 	var sig1rr,sig2rr,sig3rr,sig4rr,sig5rr,sig6rr,sig7rr;
     var sig1il,sig2il,sig3il,sig4il,sig5il,sig6il,sig7il;
 	var sig1ir,sig2ir,sig3ir,sig4ir,sig5ir,sig6ir,sig7ir;
-	var frames=128,sig1,sig2,silver=45,golden=45,l,r,g=((1+5.sqrt)/2),s=(1+2.sqrt);
+	var frames=1024,sig1,sig2,silver=45,golden=45,l,r,g=((1+5.sqrt)/2),s=(1+2.sqrt);
 
     in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 0, doneAction:0);
 	in2 = PlayBuf.ar(1, ~r2.bufnum, BufRateScale.kr(~r2.bufnum), loop: 0, doneAction:0);
@@ -59,64 +71,64 @@ SynthDef.new(\re_im, {
 	chain2 = FFT(LocalBuf(frames), in2);	chain4 = FFT(LocalBuf(frames), in4);
 
 chain1rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 0, tobin: 0, zeroothers: 1);
+						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0], tobin: ~nVals.[0], zeroothers: 1);
 chain2rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 1, tobin: 1, zeroothers: 1);
+						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0]+1, tobin: ~nVals.[1], zeroothers: 1);
 chain3rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 2, tobin: 2, zeroothers: 1);
+					{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[1]+1, tobin: ~nVals.[2], zeroothers: 1);
 chain4rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 3, tobin: 3, zeroothers: 1);
+					{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[2]+1, tobin: ~nVals.[3], zeroothers: 1);
 chain5rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 4, tobin: 4, zeroothers: 1);
+					{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[3]+1, tobin: ~nVals.[4], zeroothers: 1);
 chain6rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 5, tobin: 5, zeroothers: 1);
+					{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[4]+1, tobin: ~nVals.[5], zeroothers: 1);
 chain7rl = chain1.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 6, tobin: 6, zeroothers: 1);
+					{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[5]+1, tobin: ~nVals.[6], zeroothers: 1);
 
 chain1rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 0, tobin: 0, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: n, tobin: n, zeroothers: 1);
 chain2rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 1, tobin: 1, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+1), tobin: (n+66), zeroothers: 1);
 chain3rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 2, tobin: 2, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin:(n+66), tobin: (n+(65+66)), zeroothers: 1);
 chain4rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 3, tobin: 3, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66)), tobin: (n+(65+66+66)), zeroothers: 1);
 chain5rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 4, tobin: 4, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66)), tobin: (n+(65+66+66+66)), zeroothers: 1);
 chain6rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 5, tobin: 5, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66)), tobin: (n+(65+66+66+66+66)), zeroothers: 1);
 chain7rr = chain2.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 6, tobin: 6, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66+66)), tobin: (n+(65+66+66+66+66+66+66)), zeroothers: 1);
 
 chain1il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 0, tobin: 0, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: n, tobin: n, zeroothers: 1);
 chain2il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 1, tobin: 1, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+1), tobin: (n+66), zeroothers: 1);
 chain3il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 2, tobin: 2, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin:(n+66), tobin: (n+(65+66)), zeroothers: 1);
 chain4il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 3, tobin: 3, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66)), tobin: (n+(65+66+66)), zeroothers: 1);
 chain5il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 4, tobin: 4, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66)), tobin: (n+(65+66+66+66)), zeroothers: 1);
 chain6il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 5, tobin: 5, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66)), tobin: (n+(65+66+66+66+66)), zeroothers: 1);
 chain7il = chain3.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 6, tobin: 6, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66+66)), tobin: (n+(65+66+66+66+66+66+66)), zeroothers: 1);
 
 chain1ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 0, tobin: 0, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: n, tobin: n, zeroothers: 1);
 chain2ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 1, tobin: 1, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+1), tobin: (n+66), zeroothers: 1);
 chain3ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 2, tobin: 2, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin:(n+66), tobin: (n+(65+66)), zeroothers: 1);
 chain4ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 3, tobin: 3, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66)), tobin: (n+(65+66+66)), zeroothers: 1);
 chain5ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 4, tobin: 4, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; },frombin: (n+(66+66+66)), tobin: (n+(65+66+66+66)), zeroothers: 1);
 chain6ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 5, tobin: 5, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66)), tobin: (n+(65+66+66+66+66)), zeroothers: 1);
 chain7ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: 6, tobin: 6, zeroothers: 1);
+			{|mag, phase, index| [mag, (phase)]; }, frombin: (n+(66+66+66+66+66)), tobin: (n+(65+66+66+66+66+66+66)), zeroothers: 1);
 
 l=exp(Complex(0,1)*silver.degrad).real.round(0.0001).abs;
 r=exp(Complex(0,1)*silver.degrad).imag.round(0.0001).abs.neg;
@@ -150,8 +162,8 @@ Out.ar(0,Pan2.ar(sig5ir,r,amp5a));Out.ar(0,Pan2.ar(sig6ir,r,amp6a));Out.ar(0,Pan
 );
 
 
-2.wait;
-~synth=Synth.new(\re_im,[\amp1,0.1,\amp2,1,\amp3,0.1,\amp4,1,\amp5,0.1,\amp6,1,\amp7,0.1,\amp1a,1,\amp2a,0.1,\amp3a,1,\amp4a,0.1,\amp5a,1,\amp6a,0.1,\amp7a,0.1]).register;//s.record
+5.wait;
+~synth=Synth.new(\re_im,[\amp1,1,\amp2,0,\amp3,1,\amp4,0,\amp5,1,\amp6,0,\amp7,1,\amp1a,1,\amp2a,1,\amp3a,0,\amp4a,1,\amp5a,0,\amp6a,1,\amp7a,0]).register;//s.record
 2.wait;
 (
 MIDIClient.init;

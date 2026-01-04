@@ -30,10 +30,10 @@ s.meter;
 	Buffer.freeAll;
 
 (
-~r1 = Buffer.readChannel(s,"/Users/amimid/Music/SuperCollider Recordings/glockenspiel.wav",channels:0 );
-~r2 = Buffer.readChannel(s,"/Users/amimid/Music/SuperCollider Recordings/glockenspiel.wav",channels:1 );
-~i3 = Buffer.readChannel(s,"/Users/amimid/Music/SuperCollider Recordings/drone_1_2.wav",channels:0 );
-~i4 = Buffer.readChannel(s,"/Users/amimid/Music/SuperCollider Recordings/drone_1_2.wav",channels:1 );
+~r1 = Buffer.readChannel(s,,channels:0 );
+~r2 = Buffer.readChannel(s,,channels:1 );
+~i3 = Buffer.readChannel(s,,channels:0 );
+~i4 = Buffer.readChannel(s,,channels:1 );
 		);
 
 		(

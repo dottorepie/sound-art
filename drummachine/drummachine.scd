@@ -18,7 +18,21 @@
 //Bass dominates gain control
 //Mix sounds flat, distant
 //Quiet detail doesn’t recover fast enough
-//tanh saturation mul less as speaker size increase
+//tanh saturation mul less as speaker size increase///
+
+///quaterion rhtyhm solid rotation
+/*(var i=Quaternion(0, axis_xyz.[0], 0, 0),j=Quaternion(0, 0, axis_xyz.[1], 0),k=Quaternion(0, 0, 0, axis_xyz.[2]);
+
+axis=i+j+k;
+~x1=tetrahedron.collect{
+	plx1=plx1+1;
+	qx1=Quaternion(0,Spherical(1,~az1[plx1],~el1[plx1]).x.round(0.00001),Spherical(1,~az1[plx1],~el1[plx1]).y.round(0.00001),Spherical(1,~az1[plx1],~el1[plx1]).z.round(0.00001));
+	rotor_a=((axis*exp(Complex(0,1)*angle_a.degrad).imag)+exp(Complex(0,1)*angle_a.degrad).real); ax=rotor_a*qx1*rotor_a.conjugate;
+	ax.b.round(0.00001);
+};
+)*/
+
+
 
 (
 (
@@ -62,7 +76,7 @@ wt = signal.asWavetable;
 //////kick
  (
 SynthDef(\kick, {
-	var amp=4,fund=28,ton=4,pan=0.5,low=0,noise=0.001,decay=2,equlibrium;
+	var amp=4,fund=28,ton=4,pan=0.5,low=0,noise=0.001,decay=1,equlibrium;
     var env,linex,liney,sig1,sig2,freq,angle,angle1,angle2,pos1,pos2;
 	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1;
 
@@ -109,12 +123,12 @@ sig2 = sig2 + (sig2 * BrownNoise.ar(noise));
 
 }).add;);
 
-Synth(\kick);
+//Synth(\kick);
 
 /////snare
 (
 SynthDef(\snare, {
- 	var amp=2,fund=28*2.pow(24/12),pan=0.5,low=992*0,noise=0.05,decay=0.3,snare=fund*8,equlibrium;
+ 	var amp=2,fund=28*2.pow(24/12),pan=0.5,low=992*0,noise=0.02,decay=0.2,snare=fund*8,equlibrium;
     var env,linex,liney,sig1,sig2,freq,angle,angle1,angle2,pos1,pos2;
 	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1;
 
@@ -158,7 +172,7 @@ pos2=exp(Complex(0,1)*angle).imag;
 }).add;
 );
 
-Synth(\snare);
+//Synth(\snare);
 /*(
 ////hihat
 (
@@ -317,58 +331,34 @@ Synth(\snare);
 Synth(\kick);
 )*/
 
-	/////octahedron
+	/////solid
 (
 ~az=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
 ~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];
 );
 //////////patterns
-({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c, beat=1, frame=32.reciprocal,n=0,bank=4;
 
-~durk=[];
-
-~x=bank.collect{
-m1=m1+1;
-			b=Spherical(beat,~az.[m1],~el.[m1]).x.round(frame);
-	2.pow(b).round(0.00001);
-};
-~y=bank.collect{
-m2=m2+1;
-	c=Spherical(beat,~az.[m2],~el.[m2]).y.round(frame);
-	2.pow(c).round(0.00001);
-};
-~z=bank.collect{
-m3=m3+1;
-	d=Spherical(beat,~az.[m3],~el.[m3]).z.round(frame);
-	2.pow(d).round(0.00001);
-};
-		bank.do{ ~durk=~durk++~x.[n]++~y.[n]++~z.[n]; n=n+1;};
-//	~dur = ~duri.collect { |x|
-  //  if (x == 0) { Rest(2) } { x }
-//	}
-}.value;
-);
-
-	({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c, beat=1, frame=32.reciprocal,n=0,bank=4;
+	({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c, beat=1/2, frame=16.reciprocal,n=0,bank=4;
 
 ~durs=[];
 
 ~x2=bank.collect{
 m1=m1+1;
-	b=Spherical(beat,~az.[m1],~el.[m1]).rotate(90.degrad).x.round(frame);
+	b=Spherical(beat,~az.[m1],~el.[m1]).rotate(0.degrad).x.round(frame);
 	2.pow(b).round(0.00001);
 };
 ~y2=bank.collect{
 m2=m2+1;
-	c=Spherical(beat,~az.[m2],~el.[m2]).rotate(90.degrad).y.round(frame);
+	c=Spherical(beat,~az.[m2],~el.[m2]).rotate(0.degrad).y.round(frame);
 	2.pow(c).round(0.00001);
 };
 ~z2=bank.collect{
 m3=m3+1;
-	d=Spherical(beat,~az.[m3],~el.[m3]).rotate(90.degrad).z.round(frame);
+	d=Spherical(beat,~az.[m3],~el.[m3]).rotate(0.degrad).z.round(frame);
 	2.pow(d).round(0.00001);
 };
-		bank.do{ ~durs=~durs++~x2.[n]++~y2.[n]++~z2.[n]; n=n+1;};
+		bank.do{ ~durs=~durs
+			++~x2.[n]++~x2.[n+1]++~x2.[n+2]++~x2.[n+3]++~y2.[n]++~y2.[n+1]++~y2.[n+2]++~y2.[n+3]++~z2.[n]++~z2.[n+1]++~z2.[n+2]++~z2.[n+3]};
 //	~dur = ~duri.collect { |x|
   //  if (x == 0) { Rest(2) } { x }
 //	}
@@ -377,13 +367,13 @@ m3=m3+1;
 (
 	(
 		~kick=Pdef(\1, Pbind(\instrument, \kick,
-			\dur,Pseq(~durk*2,inf),
+			\dur,Pseq(~durs*2,inf),
 		))
 );
 
 (
 		~snare=Pdef(\2, Pbind(\instrument, \snare,
-			\dur,Pseq(~durk,inf),
+			\dur,Pseq(~durs,inf),
 		))
 );
 /*(
@@ -413,7 +403,7 @@ m3=m3+1;
 
 
 
-TempoClock.default.tempo_(4);
+TempoClock.default.tempo_(2);
 
 (
 ~kick.play;

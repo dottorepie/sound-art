@@ -24,6 +24,26 @@ var n=1.neg,c;
 ~signalSize = 2048*8;
 )
 
+////exp temperament method
+
+(
+			{
+var steps = 64;
+
+~nVals = steps.collect { |i|
+    i.linexp(0, steps-1, 1, 64)
+};
+			~nVals;
+			}.value;
+		)
+(
+~n=1.neg;~array=64.collect{~n=~n+1;~nVals.[~n]};
+~a=(0-(pi/64)); ~ph=64.collect{~a=~a+(pi/64);};
+~bufferSize = 4096*8;
+~signalSize = 2048*8;
+)
+
+
 /////lamdoma method
 (
 ~n=0;~array=512.collect{~n=~n+1;(~n+1)/~n};
@@ -58,7 +78,7 @@ signal.plot;
 
 (
 {
-	var freq=6*32, b=1,f=8,rz=100,amp=1;
+	var freq=6*32, b=1,f=1,rz=100,amp=1;
 
 Out.ar(0,LPF.ar((Osc.ar(~w.bufnum,freq,phase:0.degrad,mul:rz).abs*SinOsc.ar(freq,phase:0.degrad)),freq*f.round(1),amp));
 Out.ar(1,LPF.ar((Osc.ar(~w.bufnum,freq,phase:90.degrad,mul:rz).abs*SinOsc.ar(freq,phase:90.degrad)),freq*f.round(1),amp));

@@ -91,8 +91,8 @@ SynthDef.new(\re_dif, {
 	var pan,p_amp=1,coordinate=0,angle,pan_az,pan_el;
 
 
-				az=MouseX.kr(pi.neg,pi);
-				el=MouseY.kr((pi/2).neg,(pi/2));
+				az=MouseX.kr(pi.neg,pi).lag(0.1);
+				el=MouseY.kr((pi/2).neg,(pi/2)).lag(0.1);
     in = PlayBuf.ar(1, ~b.bufnum, BufRateScale.kr(~b.bufnum), loop: 0, doneAction:0);
 
 chain = FFT(LocalBuf(frames), in);
@@ -132,8 +132,12 @@ out2=Out.ar(0,Pan2.ar(sig,pos2)*pan);
 
 
 40.wait;
-~synth=Synth.new(\re_dif,[\az,0,\el,pi/5,\stasis,0,\pan_lfo,0.1]).register;//s.record
+		(
+~synth=Synth.new(\re_dif,[\az,0,\el,pi/5,\stasis,0,\pan_lfo, 0.042105263157895]).register;
+		//	s.record(duration:(3*60)+10);
+		)
 	//	~synth=Synth.new(\re_im);
+		1/(190/8)
 2.wait;
 (
 MIDIClient.init;

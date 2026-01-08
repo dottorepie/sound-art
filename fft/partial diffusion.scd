@@ -6,7 +6,7 @@
 s.options.numWireBufs = 1024*2;
 s.options.numOutputBusChannels=2;
 s.options.numInputBusChannels=0;
-s.options.memSize = 8192*4;
+s.options.memSize = 8192*16;
 s.options.blockSize = 64;
 s.options.maxNodes = 1024 * 2;
 //s.makeGui(w);
@@ -15,8 +15,8 @@ s.options.sampleRate= 44100;
 //s.recSampleFormat ="int16";
 //s.recChannels = 8;
 //s.boot;
-~frames=(1024*16);
-///(44100/(1024*16))*(512*12) number of partials, bin width = sample rate/ fft size(frames)
+~frames=(1024*8);
+///(44100/(1024*8))*(512*7) number of partials, bin width = sample rate/ fft size(frames)
 );
 
 //
@@ -40,7 +40,7 @@ s.meter;
 		/////////////osc polytope
 	(
 {
-var sph1,sph2,az1=0,el1=0,az2=0,el2=0
+var sph1,sph2,az1=0,el1=0,az2=0,el2=0;
 var azimuth,elevation,angle=0,silver_r=(1+2.sqrt),golden_r=((1+5.sqrt)/2);
 
 	~az=[];~el=[];
@@ -67,38 +67,39 @@ angle=(angle+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 
 
 //////////////audio file
-(
-~b = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/Surorile Osoianu.wav",channels:0 );
-		);
+(~b = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/Surorile Osoianu.wav",channels:0 ););
 
+////psychoacoustic exponential bin distribution
 		(
 			{
-var steps = 512;
+var steps = 257;
 
 ~nVals = steps.collect { |i|
-    i.linexp(0, steps-1, 0.18, 7168).round
+    i.linexp(0, steps-1, 0.18, 3584).round
 };
 			~nVals.asInteger;
 			}.value;
 		);
 
+		///def
 (
-SynthDef.new(\re_dif1, {
+SynthDef.new(\re_dif, {
 
 	arg az,el,stasis,pan_lfo;
-    var in,n=0,chain,sig,cahin_p,n=0,coo,modulator,panx,pany,panz,angle;
-	var frames=~frames,silver=45,golden=45,out;
-	var out1,out2,pan,p_amp=1,coordinate=0,angle,pan_az,pan_el;
-	var pos1,pos2,sph,phase,freq=220,f=1,amp=1,sph,angle1,angle2;
+    var in,n1=0,n2=1,chain,sig,chain_p,coo=0,modulator,panx,pany,panz;
+	var frames=~frames,out,pos1,pos2,out1,out2,sph;
+	var pan,p_amp=1,coordinate=0,angle,pan_az,pan_el;
 
 
-    in1 = PlayBuf.ar(1, ~b.bufnum, BufRateScale.kr(~b.bufnum), loop: 0, doneAction:0);
+				az=MouseX.kr(pi.neg,pi);
+				el=MouseY.kr((pi/2).neg,(pi/2));
+    in = PlayBuf.ar(1, ~b.bufnum, BufRateScale.kr(~b.bufnum), loop: 0, doneAction:0);
 
 chain = FFT(LocalBuf(frames), in);
 
-512.do{
+256.do{
 chain_p = chain.pvcollect(frames,
-						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[n], tobin: ~nVals.[n]+1, zeroothers: 1);
+						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[n1]+1, tobin: ~nVals.[n2], zeroothers: 1);
 
 
 //sph1=Spherical(1,(~az1.[coordinate]+az).wrap(pi.neg,pi),(~el1.[coordinate]+el).wrap((pi/2).neg,(pi/2)));
@@ -107,21 +108,22 @@ chain_p = chain.pvcollect(frames,
 sph=Spherical(1,~az.[coo],~el.[coo]);
 modulator=Spherical(1,az,el);
 
-panx=((exp(Complex(0,1)*sph.theta).real*exp(Complex(0,1)*sph.phi).real)-(exp(Complex(0,1)*modulator.theta).real*exp(Complex(0,1)*tensor.phi).real));
-pany=((exp(Complex(0,1)*sph.theta).imag*exp(Complex(0,1)*sph.phi).real)-(exp(Complex(0,1)*modulator.theta).real*exp(Complex(0,1)*tensor.phi).real));
-panz=((exp(Complex(0,1)*sph.phi).imag)-(exp(Complex(0,1)*tensor.phi).imag));
+panx=((exp(Complex(0,1)*sph.theta).real*exp(Complex(0,1)*sph.phi).real)-(exp(Complex(0,1)*modulator.theta).real*exp(Complex(0,1)*modulator.phi).real));
+pany=((exp(Complex(0,1)*sph.theta).imag*exp(Complex(0,1)*sph.phi).real)-(exp(Complex(0,1)*modulator.theta).imag*exp(Complex(0,1)*modulator.phi).real));
+panz=((exp(Complex(0,1)*sph.phi).imag)-(exp(Complex(0,1)*modulator.phi).imag));
 
 angle=Complex(panx,pany).theta;
 					pan=Select.ar(stasis,[SinOsc.ar(pan_lfo,phase:angle,mul:p_amp),DC.ar(1)]);
 
-pos1=Select.ar(stasis,[exp(Complex(0,1)*angle).real,DC.ar(1)]);
-pos2=Select.ar(stasis,[exp(Complex(0,1)*angle).imag,DC.ar(1.neg)]);
+					pos1=Select.ar(stasis,[K2A.ar(exp(Complex(0,1)*angle).real),DC.ar(1)]);
+					pos2=Select.ar(stasis,[K2A.ar(exp(Complex(0,1)*angle).imag),DC.ar(1.neg)]);
 
 sig=IFFT(chain_p);
 
 out1=Out.ar(0,Pan2.ar(sig,pos1)*pan);
 out2=Out.ar(0,Pan2.ar(sig,pos2)*pan);
 
+					n1=n1+1; n2=n2+1; coo=coo+1;
 						//out=VBAP.ar(4,sig,~b.bufnum,azimuth:sph.theta.raddeg,elevation:sph.phi.raddeg,spread:1);
 						}
 
@@ -129,8 +131,8 @@ out2=Out.ar(0,Pan2.ar(sig,pos2)*pan);
 );
 
 
-5.wait;
-~synth=Synth.new(\re_im,[\az,0,\el,0,\stasis,0,\pan_lfo,0.1]).register;//s.record
+40.wait;
+~synth=Synth.new(\re_dif,[\az,0,\el,pi/5,\stasis,0,\pan_lfo,0.1]).register;//s.record
 	//	~synth=Synth.new(\re_im);
 2.wait;
 (

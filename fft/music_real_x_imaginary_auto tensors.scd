@@ -37,12 +37,14 @@ s.meter;
 ~i4 = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/Surorile Osoianu.wav",channels:1 );
 		);
 
+
+		///psuchoacoustic distribution
 		(
 			{
 var steps = 8;
 
 ~nVals = steps.collect { |i|
-    i.linexp(0, steps-1, 0.18, 463).round
+					i.linexp(0, steps-1, 0.18, 463).round
 };
 			~nVals.asInteger;
 			}.value;

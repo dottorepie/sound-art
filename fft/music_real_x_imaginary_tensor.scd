@@ -31,10 +31,10 @@ s.meter;
 	Buffer.freeAll;
 
 (
-~r1 = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/m.wav",channels:0 );
-~r2 = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/m.wav",channels:1 );
-~i3 = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/Surorile Osoianu.wav",channels:0 );
-~i4 = Buffer.readChannel(s,"/Users/amimid/Documents/Art/Sound art/experimental projects/samples/Surorile Osoianu.wav",channels:1 );
+~r1 = Buffer.readChannel(s,,channels:0 );
+~r2 = Buffer.readChannel(s,,channels:1 );
+~i3 = Buffer.readChannel(s,,channels:0 );
+~i4 = Buffer.readChannel(s,,channels:1 );
 		);
 
 		(
@@ -48,7 +48,7 @@ var steps = 8;
 			}.value;
 		);
 
-		//////cube tensor locations
+		////// tensor locations
 (
 ~az=[45.degrad,135.degrad,45.neg.degrad,135.neg.degrad,45.degrad,135.degrad,45.neg.degrad,135.neg.degrad];
 ~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad];
@@ -70,17 +70,16 @@ SynthDef.new(\re_im, {
 	var sig1ir,sig2ir,sig3ir,sig4ir,sig5ir,sig6ir,sig7ir,sig8ir;
 	var frames=~frames,sig1,sig2,silver=45,golden=45,l=1,r=1.neg,g=((1+5.sqrt)/2),s=(1+2.sqrt);
 	var loc1,loc2,loc3,loc4,loc5,loc6,loc7,loc8,tensor,index_i,index_re;
-	var mod1,mod2,mod3,mod4,mod5,mod6,mod7,mod8,mod1a,mod2a,mod3a,mod4a,mod5a,mod6a,mod7a,mod8a;
 
 				az=MouseX.kr(pi.neg,pi);
 				el=MouseY.kr((pi/2).neg,(pi/2));
 
-    in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 0, doneAction:0);
-	in2 = PlayBuf.ar(1, ~r2.bufnum, BufRateScale.kr(~r2.bufnum), loop: 0, doneAction:0);
+    in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 1, doneAction:0);
+	in2 = PlayBuf.ar(1, ~r2.bufnum, BufRateScale.kr(~r2.bufnum), loop: 1, doneAction:0);
 	//in1 = SoundIn.ar(0);
 	//in2 = SoundIn.ar(1);
-    in3 = PlayBuf.ar(1, ~i3.bufnum, BufRateScale.kr(~i3.bufnum), loop: 0, doneAction:0)*0.3;
-	in4 = PlayBuf.ar(1, ~i4.bufnum, BufRateScale.kr(~i4.bufnum), loop: 0, doneAction:0)*0.3;
+    in3 = PlayBuf.ar(1, ~i3.bufnum, BufRateScale.kr(~i3.bufnum), loop: 1, doneAction:0)*0.3;
+	in4 = PlayBuf.ar(1, ~i4.bufnum, BufRateScale.kr(~i4.bufnum), loop: 1, doneAction:0)*0.3;
 	//in3 = SoundIn.ar(0);
 	//in4 = SoundIn.ar(1);
 	chain1 = FFT(LocalBuf(frames), in1);	chain3 = FFT(LocalBuf(frames), in3);
@@ -169,7 +168,7 @@ sig5rl=IFFT(chain5rl);sig6rl=IFFT(chain6rl);sig7rl=IFFT(chain7rl);sig8rl=IFFT(ch
 sig1rr=IFFT(chain1rr);sig2rr=IFFT(chain2rr);sig3rr=IFFT(chain3rr);sig4rr=IFFT(chain4rr);
 sig5rr=IFFT(chain5rr);sig6rr=IFFT(chain6rr);sig7rr=IFFT(chain7rr);sig8rr=IFFT(chain8rr);
 
-sig1il=IFFT(chain1il);sig2il=IFFT(chain2il);sig3il=IFFT(chain3il);sig4rl=IFFT(chain4il);
+sig1il=IFFT(chain1il);sig2il=IFFT(chain2il);sig3il=IFFT(chain3il);sig4il=IFFT(chain4il);
 sig5il=IFFT(chain5il);sig6il=IFFT(chain6il);sig7il=IFFT(chain7il);sig8il=IFFT(chain8il);
 
 sig1ir=IFFT(chain1ir);sig2ir=IFFT(chain2ir);sig3ir=IFFT(chain3ir);sig4ir=IFFT(chain4ir);
@@ -182,56 +181,70 @@ loc5=Spherical(1,~az.[4],~el.[4]);loc6=Spherical(1,~az.[5],~el.[5]);loc7=Spheric
 tensor=Spherical(1,az,el);
 index_re=re; index_i=i;
 
-mod1=((exp(Complex(0,1)*loc1.theta).real*exp(Complex(0,1)*loc1.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod2=((exp(Complex(0,1)*loc2.theta).real*exp(Complex(0,1)*loc2.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod3=((exp(Complex(0,1)*loc3.theta).real*exp(Complex(0,1)*loc3.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod4=((exp(Complex(0,1)*loc4.theta).real*exp(Complex(0,1)*loc4.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod5=((exp(Complex(0,1)*loc5.theta).real*exp(Complex(0,1)*loc5.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod6=((exp(Complex(0,1)*loc6.theta).real*exp(Complex(0,1)*loc6.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod7=((exp(Complex(0,1)*loc7.theta).real*exp(Complex(0,1)*loc7.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod8=((exp(Complex(0,1)*loc8.theta).real*exp(Complex(0,1)*loc8.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real));
-mod1a=((exp(Complex(0,1)*loc1.theta).imag*exp(Complex(0,1)*loc1.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod2a=((exp(Complex(0,1)*loc2.theta).imag*exp(Complex(0,1)*loc2.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod3a=((exp(Complex(0,1)*loc3.theta).imag*exp(Complex(0,1)*loc3.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod4a=((exp(Complex(0,1)*loc4.theta).imag*exp(Complex(0,1)*loc4.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod5a=((exp(Complex(0,1)*loc5.theta).imag*exp(Complex(0,1)*loc5.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod6a=((exp(Complex(0,1)*loc6.theta).imag*exp(Complex(0,1)*loc6.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod7a=((exp(Complex(0,1)*loc7.theta).imag*exp(Complex(0,1)*loc7.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-mod8a=((exp(Complex(0,1)*loc8.theta).imag*exp(Complex(0,1)*loc8.phi).real)-
-							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
-
-
-amp1=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp2=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp3=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp4=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp5=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp6=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp7=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp8=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp1a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp2a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp3a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp4a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp5a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp6a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp7a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp8a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
+amp1=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc1.theta).real*exp(Complex(0,1)*loc1.phi).real)-
+							(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp2=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc2.theta).real*exp(Complex(0,1)*loc2.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp3=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc3.theta).real*exp(Complex(0,1)*loc3.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp4=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc4.theta).real*exp(Complex(0,1)*loc4.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp5=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc5.theta).real*exp(Complex(0,1)*loc5.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp6=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc6.theta).real*exp(Complex(0,1)*loc6.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp7=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc7.theta).real*exp(Complex(0,1)*loc7.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp8=Select.ar(index_re,[
+K2A.ar(
+((exp(Complex(0,1)*loc8.theta).real*exp(Complex(0,1)*loc8.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).real*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp1a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc1.theta).imag*exp(Complex(0,1)*loc1.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp2a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc2.theta).imag*exp(Complex(0,1)*loc2.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp3a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc3.theta).imag*exp(Complex(0,1)*loc3.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp4a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc4.theta).imag*exp(Complex(0,1)*loc4.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp5a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc5.theta).imag*exp(Complex(0,1)*loc5.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp6a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc6.theta).imag*exp(Complex(0,1)*loc6.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp7a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc7.theta).imag*exp(Complex(0,1)*loc7.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
+amp8a=Select.ar(index_i,[
+K2A.ar(
+((exp(Complex(0,1)*loc8.theta).imag*exp(Complex(0,1)*loc8.phi).real)-
+						(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real))),DC.ar(1)]);
 
 
 
@@ -250,7 +263,7 @@ Out.ar(0,Pan2.ar(sig5ir,r,amp5a));Out.ar(0,Pan2.ar(sig6ir,r,amp6a));Out.ar(0,Pan
 
 
 5.wait;
-~synth=Synth.new(\re_im,[\az,pi.rand,\el,(pi/2),\re,0,\i,0,\pan,1]).register;//s.record
+~synth=Synth.new(\re_im,[\az,pi,\el,(pi/2),\re,0,\i,0,]).register;//s.record
 	//	~synth=Synth.new(\re_im);
 2.wait;
 (

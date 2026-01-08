@@ -87,22 +87,25 @@ angle=(angle+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 ~bufferSize = 4096*8;
 ~signalSize = 2048*8;
 );
-		/////sawtooth  method
-/*(
-~n=0;~array=512.collect{~n=~n+1;};
-//~a=(0-(pi/256)); ~ph=512.collect{~a=~a+(pi/256);};
-~ph=[0];
+		/*(
+(
+			{
+var steps = 256;
+
+~nVals = steps.collect { |i|
+    i.linexp(0, steps-1, 1, 64)
+};
+			~nVals;
+			}.value;
+		);
+(
+~n=1.neg;~array=256.collect{~n=~n+1;~nVals.[~n]};
+~a=(0-(pi/256)); ~ph=256.collect{~a=~a+(pi/256);};
 ~bufferSize = 4096*8;
 ~signalSize = 2048*8;
+)
 )*/
 
-		/////lamdoma method
-/*(
-~n=0;~array=512.collect{~n=~n+1;(~n+1)/~n};
-~a=(0-(pi/256)); ~ph=512.collect{~a=~a+(pi/256);};
-~bufferSize = 4096*8;
-~signalSize = 2048*8;
-)*/
 
 
 		(
@@ -139,7 +142,8 @@ SynthDef.new(\synth,{
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,first=32*(9/8),bank=4,out1,out2,fm,band_osc1,band_osc2,ton,threshold=18.neg.dbamp;
 	var band_osc3,band_osc4,band_osc5,band_osc6,octahedron,sig3,out3,cell_tria,b_x,b_y,b_z,polytope;
-	var magx,magy,magz,magqx,magqy,mod_angle,phase1,phase2,angle,angle1,angle2,pos1,pos2,sph1,sph2,pan1,pan2;
+	var magx,magy,magz,magqx,magqy,mod_angle,phase1,phase2,angle,angle1x,angle2x,angle1y,angle2y,anglex,angley;
+	var pos1,pos2,sph1,sph2,pan1,pan2,anglez;
 	var mod_angle1,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,spread=1,mq=(m-1),choice,nn=0;
 
 				lamdoma=(x+a)/x;
@@ -221,13 +225,22 @@ pan2=SinOsc.ar(my,phase:phase2);
 sph1=Spherical(1,polytope.theta,polytope.phi);
 sph2=Spherical(1,polytope.theta,(polytope.phi+equlibrium).wrap2((pi/2)));
 
-angle1=Complex(exp(Complex(0,1)*sph1.theta).real,exp(Complex(0,1)*sph1.phi).imag).theta;
-angle2=Complex(exp(Complex(0,1)*sph2.theta).real,exp(Complex(0,1)*sph2.phi).imag).theta;
+angle1x=Complex(exp(Complex(0,1)*sph1.theta).real,exp(Complex(0,1)*sph1.phi).real).theta;
+angle1y=Complex(exp(Complex(0,1)*sph1.theta).real,exp(Complex(0,1)*sph1.phi).imag).theta;
+angle2x=Complex(exp(Complex(0,1)*sph2.theta).real,exp(Complex(0,1)*sph2.phi).real).theta;
+angle2y=Complex(exp(Complex(0,1)*sph2.theta).real,exp(Complex(0,1)*sph2.phi).imag).theta;
 
-angle=Complex(exp(Complex(0,1)*angle1).real,exp(Complex(0,1)*angle2).imag).theta;
+
+anglex=Complex(exp(Complex(0,1)*angle1x).real,exp(Complex(0,1)*angle1y).imag).theta;
+angley=Complex(exp(Complex(0,1)*angle2x).real,exp(Complex(0,1)*angle2y).imag).theta;
+anglez=Complex(exp(Complex(0,1)*sph1.phi).imag,exp(Complex(0,1)*sph2.phi).imag).theta;
+
+
+angle=Complex(exp(Complex(0,1)*anglex).real,exp(Complex(0,1)*angley).imag).theta;
 
 pos1=exp(Complex(0,1)*angle).real;
 pos2=exp(Complex(0,1)*angle).imag;
+cell_tria=SinOsc.ar(mz,phase:anglez);
 
 band_osc1=SinOsc.kr(b_x*2.pow(band.lag(0.01)/992),phase:0.degrad).range(496,16256);
 band_osc2=SinOsc.kr(b_y*2.pow(band.lag(0.01)/992),phase:90.degrad).range(496,16256);
@@ -272,7 +285,7 @@ sig3=(LPF.ar((Osc.ar(~w1.bufnum,freq3+b,phase:angle,mul:100).abs*SinOsc.ar(freq3
 }).add;);
 
 10.wait;
-~synth=Synth.new(\synth,[\gain,10,\tone,992,\low,0,\mix,0,\room,1,\a,1,\pan_speed1,992,\pan_speed2,992,\pan_speed3,992,
+~synth=Synth.new(\synth,[\gain,1,\tone,992*2,\low,0,\mix,0,\room,1,\a,1,\pan_speed1,992,\pan_speed2,992,\pan_speed3,992,
 			\band,(992*4).neg,\x,1,\brain,4,\m,4,\rq,1,\b,1,\scale,100,\equilibrium,pi,\f,1,\pan,45.degrad]).register;//s.record
 2.wait;
 (

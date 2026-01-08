@@ -53,13 +53,13 @@ wt = signal.asWavetable;
 
 (
 {
-var sig
+var sig,freq=440,low=1;
 
-sig=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:phase1,mul:100).abs*SinOsc.ar(freq,phase:phase1)),freq*2.pow(low.lag(0.01)/992)))
+sig=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:0,mul:100).abs*SinOsc.ar(freq,phase:0)),freq*));
 
 
 sig=HPF.ar(sig,50);
 sig=Compander.ar(sig,sig,-24.dbamp,1,0.3,0.015,0.3);
-sig=tanh(sig1*2);
+sig=tanh(sig*1);
 sig=Limiter.ar(sig,1,0.01);
 }.play)

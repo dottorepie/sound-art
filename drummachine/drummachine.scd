@@ -76,9 +76,9 @@ wt = signal.asWavetable;
 //////kick
  (
 SynthDef(\kick, {
-	var amp=4,fund=28,ton=4,pan=0.5,low=0,noise=0.001,decay=1,equlibrium;
+	var amp=4,fund=28,ton=4,pan=0.5,low=0,noise=0.001,decay=1,equlibrium,threshold=-24.dbamp;
     var env,linex,liney,sig1,sig2,freq,angle,angle1,angle2,pos1,pos2;
-	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1;
+	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1,control;
 
 	freq = EnvGen.kr(Env([fund*ton, fund], [decay/8], curve: -4)); // pitch drop
 	env= EnvGen.kr(Env.perc(0.01, decay, curve: -4),doneAction:2,levelScale:amp);
@@ -109,12 +109,13 @@ pos2=exp(Complex(0,1)*angle).imag;
 
 		sig1=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:phase1,mul:100).abs*SinOsc.ar(freq,phase:phase1)),freq*2.pow(low.lag(0.01)/992)));
         sig2=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:phase2,mul:100).abs*SinOsc.ar(freq,phase:phase2)),freq*2.pow(low.lag(0.01)/992)));
+			control=SinOsc.ar(freq,angle);
 
 sig1 = sig1 + (sig1 * BrownNoise.ar(noise));
 sig2 = sig2 + (sig2 * BrownNoise.ar(noise));
 
 		sig2=HPF.ar(sig2,50); sig2=LPF.ar(sig2, 2000); sig1=HPF.ar(sig1,50); sig1=LPF.ar(sig1, 2000);
-		sig2=Compander.ar(sig2,sig2,-24.dbamp,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,sig1,-24.dbamp,1,0.3,0.015,0.3);
+		sig2=Compander.ar(sig2,control,threshold,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,control,threshold,1,0.3,0.015,0.3);
 		sig1=tanh(sig1*2);sig2=tanh(sig2*2);sig1=Limiter.ar(sig1,1,0.01);sig2=Limiter.ar(sig2,1,0.01);
 
 
@@ -128,9 +129,9 @@ sig2 = sig2 + (sig2 * BrownNoise.ar(noise));
 /////snare
 (
 SynthDef(\snare, {
- 	var amp=2,fund=28*2.pow(24/12),pan=0.5,low=992*0,noise=0.02,decay=0.2,snare=fund*8,equlibrium;
+ 	var amp=2,fund=28*2.pow(24/12),pan=0.5,low=992*0,noise=0.02,decay=0.2,snare=fund*8,equlibrium,threshold=-24.dbamp;
     var env,linex,liney,sig1,sig2,freq,angle,angle1,angle2,pos1,pos2;
-	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1;
+	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1,control;
 
 	freq = EnvGen.kr(Env([fund, fund*(8/9)], [decay/2], curve: -4));
 	env= EnvGen.kr(Env.perc(0.01, decay),doneAction:2,levelScale:amp);
@@ -162,9 +163,10 @@ pos2=exp(Complex(0,1)*angle).imag;
 
 		sig1 = (sig1 + (HPF.ar(BrownNoise.ar(noise),snare)* Env.perc(0.01, 0.1).ar));
 		sig2 = (sig2 + (HPF.ar(BrownNoise.ar(noise),snare)* Env.perc(0.01, 0.1).ar));
+		control=SinOsc.ar(freq,angle);
 
 	    sig2=HPF.ar(sig2,50);  sig1=HPF.ar(sig1,50);
-		sig2=Compander.ar(sig2,sig2,-24.dbamp,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,sig1,-24.dbamp,1,0.3,0.015,0.3);
+		sig2=Compander.ar(sig2,control,threshold,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,control,threshold,1,0.3,0.015,0.3);
 		sig1=tanh(sig1*2);sig2=tanh(sig2*2);sig1=Limiter.ar(sig1,1,0.01);sig2=Limiter.ar(sig2,1,0.01);
 
 	Out.ar(0, Pan2.ar(sig1,pos1,env)*pan1);
@@ -275,9 +277,9 @@ silver=(silver+(360-(360/(1+2.sqrt)))).wrap(180.neg,180).round(0.00001);
 	///	Synth(\crash);
 (
 SynthDef(\tom, {
-	var amp=3,fund=28,ton=4,pan=2,low=992,noise=0.001,decay=2;
+	var amp=4,fund=28,ton=4,pan=0.5,low=0,noise=0.001,decay=1,equlibrium,threshold=-24.dbamp;
     var env,linex,liney,sig1,sig2,freq,angle,angle1,angle2,pos1,pos2;
-	var az,el,sph1,sph2,equlibrium,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1;
+	var az,el,sph1,sph2,pan1,pan2,phase1,phase2,p_amp1=1,p_amp2=1,control;
 
 	freq = EnvGen.kr(Env([fund*ton, fund], [decay/8], curve: -4)); // pitch drop
 	env= EnvGen.kr(Env.perc(0.01, decay, curve: -4),doneAction:2,levelScale:amp);
@@ -308,6 +310,8 @@ pos2=exp(Complex(0,1)*angle).imag;
 
 		sig1=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:phase1,mul:100).abs*SinOsc.ar(freq,phase:phase1)),freq*2.pow(low.lag(0.01)/992)));
         sig2=(LPF.ar((Osc.ar(~w1.bufnum,freq,phase:phase2,mul:100).abs*SinOsc.ar(freq,phase:phase2)),freq*2.pow(low.lag(0.01)/992)));
+	control=SinOsc.ar(freq,angle);
+
 
 sig1 = sig1 + (sig1 * (BPF.ar(BrownNoise.ar(noise),freq*2)* Env.perc(0.001, 0.05).ar));
 sig2 = sig2 + (sig2 * (BPF.ar(BrownNoise.ar(noise),freq*2)* Env.perc(0.001, 0.05).ar));
@@ -315,7 +319,7 @@ sig2 = sig2 + (sig2 * (BPF.ar(BrownNoise.ar(noise),freq*2)* Env.perc(0.001, 0.05
 	Delay1.ar(in: 0.0, mul: 1.0, add: 0.0, x1: 0.0)
 
 		sig2=HPF.ar(sig2,50); sig2=LPF.ar(sig2, 2000); sig1=HPF.ar(sig1,50); sig1=LPF.ar(sig1, 2000);
-		sig2=Compander.ar(sig2,sig2,-24.dbamp,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,sig1,-24.dbamp,1,0.3,0.015,0.3);
+		sig2=Compander.ar(sig2,control,threshold,1,0.3,0.015,0.3); sig1=Compander.ar(sig1,control,threshold,1,0.3,0.015,0.3);
 		sig1=tanh(sig1*2);sig2=tanh(sig2*2);sig1=Limiter.ar(sig1,1,0.01);sig2=Limiter.ar(sig2,1,0.01);
 
 

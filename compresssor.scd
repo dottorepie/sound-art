@@ -108,18 +108,19 @@ var m=MouseX.kr(10,10000);
 	SinOsc.ar((2*m).poll,mul:m.reciprocal)*10}.play
 )
 
-/////////////compressor example low carrier 343/0.18
+/////////////compressor example low carrier 343/0.07
 (
 {
-	var sig,freq=55,low=1,control,out;
+	var sig,freq=55,low=1,control,out,threshold;
 
-	sig=((LPF.ar((Osc.ar(~w1.bufnum,freq,phase:0,mul:100).abs*SinOsc.ar(freq,phase:0)),freq*low))+(LPF.ar((Osc.ar(~w1.bufnum,freq*32,phase:0,mul:100).abs*SinOsc.ar(freq*16,phase:0)),(freq*16)*low,1/16)));
+	sig=((LPF.ar((Osc.ar(~w1.bufnum,freq,phase:0,mul:100).abs*SinOsc.ar(freq,phase:0)),freq*low))+(LPF.ar((Osc.ar(~w1.bufnum,freq*32,phase:0,mul:100).abs*SinOsc.ar(freq*16,phase:0)),(freq*16)*low,1/16)))*0.1;
 	//control=SinOsc.ar(freq,mul:1);
-	control=sig;
+	control=(SinOsc.ar(freq,phase:0)+SinOsc.ar(freq*16,phase:0,mul:1/16))*0.1;
 
 sig=HPF.ar(sig,50);
 
-	sig=Compander.ar(sig,control,1905.5555555556.reciprocal,1,1/3,0.03,0.15);
+	threshold=(4900.reciprocal.ampdb/2.sqrt).dbamp;
+	sig=Compander.ar(sig,control,threshold,1.2,1/3,0.03,0.15);
 	sig=tanh(sig*1.8)*10;
 
 

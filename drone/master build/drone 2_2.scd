@@ -268,9 +268,9 @@ sig3=(LPF.ar((Osc.ar(~w1.bufnum,freq3+b,phase:angle,mul:100).abs*SinOsc.ar(freq3
 
 
 		sig1=HPF.ar(sig1,50); sig2=HPF.ar(sig1, 50);sig3=HPF.ar(sig1, 50);
-		sig1=Compander.ar(sig1,control1,threshold,1,0.3,0.015,0.3);
-		sig2=Compander.ar(sig2,control2,threshold,1,0.3,0.015,0.3);
-		sig3=Compander.ar(sig3,control3,threshold,1,0.3,0.015,0.3);
+		sig1=Compander.ar(sig1,control1,1905.5555555556.reciprocal,1.2,1/3,0.03,0.15);
+		sig2=Compander.ar(sig2,control2,1905.5555555556.reciprocal,1.2,1/3,0.03,0.15);
+		sig3=Compander.ar(sig3,control3,1905.5555555556.reciprocal,1.2,1/3,0.03,0.15);
 		sig1=tanh(sig1*2);sig2=tanh(sig2*2);sig3=tanh(sig2*2);
 
 	Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain)),0.8,0.01),pos1)*pan1);
@@ -286,7 +286,7 @@ sig3=(LPF.ar((Osc.ar(~w1.bufnum,freq3+b,phase:angle,mul:100).abs*SinOsc.ar(freq3
 }).add;);
 
 10.wait;
-~synth=Synth.new(\synth,[\gain,1,\tone,992*2,\low,0,\mix,0,\room,1,\a,1,\pan_speed1,992,\pan_speed2,992,\pan_speed3,992,
+~synth=Synth.new(\synth,[\gain,10,\tone,992*2,\low,0,\mix,0,\room,1,\a,1,\pan_speed1,992,\pan_speed2,992,\pan_speed3,992,
 			\band,(992*4).neg,\x,1,\brain,4,\m,4,\rq,1,\b,1,\scale,100,\equilibrium,pi,\f,1,\pan,45.degrad]).register;//s.record
 2.wait;
 (

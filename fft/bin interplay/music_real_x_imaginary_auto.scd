@@ -36,7 +36,6 @@ s.meter;
 ~i3 = Buffer.readChannel(s,,channels:0 );
 ~i4 = Buffer.readChannel(s,,channels:1 );
 		);
-
 		(
 			{
 var steps = 8;
@@ -75,12 +74,12 @@ SynthDef.new(\re_im, {
 				az=MouseX.kr(pi.neg,pi);
 				el=MouseY.kr((pi/2).neg,(pi/2));
 
-    in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 0, doneAction:0);
-	in2 = PlayBuf.ar(1, ~r2.bufnum, BufRateScale.kr(~r2.bufnum), loop: 0, doneAction:0);
+    in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 1, doneAction:0)*6;
+	in2 = PlayBuf.ar(1, ~r2.bufnum, BufRateScale.kr(~r2.bufnum), loop: 1, doneAction:0)*6;
 	//in1 = SoundIn.ar(0);
 	//in2 = SoundIn.ar(1);
-    in3 = PlayBuf.ar(1, ~i3.bufnum, BufRateScale.kr(~i3.bufnum), loop: 0, doneAction:0)*0.3;
-	in4 = PlayBuf.ar(1, ~i4.bufnum, BufRateScale.kr(~i4.bufnum), loop: 0, doneAction:0)*0.3;
+    in3 = PlayBuf.ar(1, ~i3.bufnum, BufRateScale.kr(~i3.bufnum), loop: 0, doneAction:0)*0.4;
+	in4 = PlayBuf.ar(1, ~i4.bufnum, BufRateScale.kr(~i4.bufnum), loop: 0, doneAction:0)*0.4;
 	//in3 = SoundIn.ar(0);
 	//in4 = SoundIn.ar(1);
 	chain1 = FFT(LocalBuf(frames), in1);	chain3 = FFT(LocalBuf(frames), in3);
@@ -216,42 +215,44 @@ mod8a=((exp(Complex(0,1)*loc8.theta).imag*exp(Complex(0,1)*loc8.phi).real)-
 							(exp(Complex(0,1)*tensor.theta).imag*exp(Complex(0,1)*tensor.phi).real));
 
 
-amp1=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp2=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp3=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp4=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp5=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp6=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp7=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
-amp8=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1a),DC.ar(1)]);
+amp1=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod1),DC.ar(1)]);
+amp2=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod2),DC.ar(1)]);
+amp3=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod3),DC.ar(1)]);
+amp4=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod4),DC.ar(1)]);
+amp5=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod5),DC.ar(1)]);
+amp6=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod6),DC.ar(1)]);
+amp7=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod7),DC.ar(1)]);
+amp8=Select.ar(index_re,[SinOsc.ar(pan,0,mul:mod8),DC.ar(1)]);
 amp1a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp2a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp3a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp4a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp5a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp6a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp7a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
-amp8a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod1a),DC.ar(1)]);
+amp2a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod2a),DC.ar(1)]);
+amp3a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod3a),DC.ar(1)]);
+amp4a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod4a),DC.ar(1)]);
+amp5a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod5a),DC.ar(1)]);
+amp6a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod6a),DC.ar(1)]);
+amp7a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod7a),DC.ar(1)]);
+amp8a=Select.ar(index_i,[SinOsc.ar(pan,90.degrad,mul:mod8a),DC.ar(1)]);
 
 
 
 Out.ar(0,Pan2.ar(sig1rl,l,amp1));Out.ar(0,Pan2.ar(sig2rl,l,amp2));Out.ar(0,Pan2.ar(sig3rl,l,amp3));Out.ar(0,Pan2.ar(sig4rl,l,amp4));
 Out.ar(0,Pan2.ar(sig5rl,l,amp5));Out.ar(0,Pan2.ar(sig6rl,l,amp6));Out.ar(0,Pan2.ar(sig7rl,l,amp7));Out.ar(0,Pan2.ar(sig8rl,l,amp8));
-Out.ar(0,Pan2.ar(sig1rr,r,amp1));Out.ar(0,Pan2.ar(sig2rr,r,amp2));Out.ar(0,Pan2.ar(sig3rr,r,amp3));Out.ar(0,Pan2.ar(sig4rr,r,amp4));
-Out.ar(0,Pan2.ar(sig5rr,r,amp5));Out.ar(0,Pan2.ar(sig6rr,r,amp6));Out.ar(0,Pan2.ar(sig7rr,r,amp7));Out.ar(0,Pan2.ar(sig8rr,r,amp8));
 
-Out.ar(0,Pan2.ar(sig1il,l,amp1a));Out.ar(0,Pan2.ar(sig2il,l,amp2a));Out.ar(0,Pan2.ar(sig3il,l,amp3a));Out.ar(0,Pan2.ar(sig4rl,l,amp4a));
-Out.ar(0,Pan2.ar(sig5il,l,amp5a));Out.ar(0,Pan2.ar(sig6il,l,amp6a));Out.ar(0,Pan2.ar(sig7il,l,amp7a));Out.ar(0,Pan2.ar(sig8il,l,amp8a));
-Out.ar(0,Pan2.ar(sig1ir,r,amp1a));Out.ar(0,Pan2.ar(sig2ir,r,amp2a));Out.ar(0,Pan2.ar(sig3ir,r,amp3a));Out.ar(0,Pan2.ar(sig4ir,r,amp4a));
-Out.ar(0,Pan2.ar(sig5ir,r,amp5a));Out.ar(0,Pan2.ar(sig6ir,r,amp6a));Out.ar(0,Pan2.ar(sig7ir,r,amp7a));Out.ar(0,Pan2.ar(sig8ir,r,amp8a));
+Out.ar(0,Pan2.ar(sig1rr,r,amp1a));Out.ar(0,Pan2.ar(sig2rr,r,amp2a));Out.ar(0,Pan2.ar(sig3rr,r,amp3a));Out.ar(0,Pan2.ar(sig4rr,r,amp4a));
+Out.ar(0,Pan2.ar(sig5rr,r,amp5a));Out.ar(0,Pan2.ar(sig6rr,r,amp6a));Out.ar(0,Pan2.ar(sig7rr,r,amp7a));Out.ar(0,Pan2.ar(sig8rr,r,amp8a));
+
+Out.ar(0,Pan2.ar(sig1il,r,amp1));Out.ar(0,Pan2.ar(sig2il,r,amp2));Out.ar(0,Pan2.ar(sig3il,r,amp3));Out.ar(0,Pan2.ar(sig4rl,r,amp4));
+Out.ar(0,Pan2.ar(sig5il,r,amp5));Out.ar(0,Pan2.ar(sig6il,r,amp6));Out.ar(0,Pan2.ar(sig7il,r,amp7));Out.ar(0,Pan2.ar(sig8il,r,amp8));
+
+Out.ar(0,Pan2.ar(sig1ir,l,amp1a));Out.ar(0,Pan2.ar(sig2ir,l,amp2a));Out.ar(0,Pan2.ar(sig3ir,l,amp3a));Out.ar(0,Pan2.ar(sig4ir,l,amp4a));
+Out.ar(0,Pan2.ar(sig5ir,l,amp5a));Out.ar(0,Pan2.ar(sig6ir,l,amp6a));Out.ar(0,Pan2.ar(sig7ir,l,amp7a));Out.ar(0,Pan2.ar(sig8ir,l,amp8a));
 
 }).add;
 );
 
 
 5.wait;
-~synth=Synth.new(\re_im,[\az,pi.rand,\el,(pi/2),\re,0,\i,0,\pan,1]).register;//s.record
-	//	~synth=Synth.new(\re_im);
+~synth=Synth.new(\re_im,[\az,pi.rand,\el,(pi/2),\re,0,\i,0,\pan,0.3]).register;//s.record
+		s.record(duration:(2*60)+59);
 2.wait;
 (
 MIDIClient.init;

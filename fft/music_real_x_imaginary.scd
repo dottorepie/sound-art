@@ -37,11 +37,8 @@ s.meter;
 
 (
 ~r1 = Buffer.readChannel(s,,channels:0 );
-~r2 = Buffer.readChannel(s,,channels:1 );
+~r2 = Buffer.readChannel(s,,channels:0 );
 ~i3 = Buffer.readChannel(s,,channels:0 );
-~i4 = Buffer.readChannel(s,,channels:1 );
-~i5 = Buffer.readChannel(s,,channels:0 );
-~i6 = Buffer.readChannel(s,,channels:1 );
 		);
 
 		(
@@ -60,22 +57,16 @@ SynthDef.new(\re_im, {
 
 	arg amp1=1,amp2=1,amp3=1,amp4=1,amp5=1,amp6=1,amp7=1,amp8=1,
 				amp1a=1,amp2a=1,amp3a=1,amp4a=1,amp5a=1,amp6a=1,amp7a=1,
-				amp8a=1,amp1aa=1,amp2aa=1,amp3aa=1,amp4aa=1,amp5aa=1,amp6aa=1,amp7aa=1,amp8aa=1,az,el;
-    var in1,in2,in3,in4,in5,in6,chain1,chain2,chain3,chain4,chain5,chain6,n=0;
+				amp8a=1,amp1aa=1,amp2aa=1,amp3aa=1,amp4aa=1,amp5aa=1,amp6aa=1,amp7aa=1,amp8aa=1,az,el,azimuth,elevation;
+
 	var chain1rl,chain2rl,chain3rl,chain4rl,chain5rl,chain6rl,chain7rl,chain8rl;
 	var chain1rr,chain2rr,chain3rr,chain4rr,chain5rr,chain6rr,chain7rr,chain8rr;
 	var chain1il,chain2il,chain3il,chain4il,chain5il,chain6il,chain7il,chain8il;
-	var chain1ir,chain2ir,chain3ir,chain4ir,chain5ir,chain6ir,chain7ir,chain8ir;
-	var chain1iil,chain2iil,chain3iil,chain4iil,chain5iil,chain6iil,chain7iil,chain8iil;
-	var chain1iir,chain2iir,chain3iir,chain4iir,chain5iir,chain6iir,chain7iir,chain8iir;
     var sig1rl,sig2rl,sig3rl,sig4rl,sig5rl,sig6rl,sig7rl,sig8rl;
 	var sig1rr,sig2rr,sig3rr,sig4rr,sig5rr,sig6rr,sig7rr,sig8rr;
     var sig1il,sig2il,sig3il,sig4il,sig5il,sig6il,sig7il,sig8il;
-	var sig1ir,sig2ir,sig3ir,sig4ir,sig5ir,sig6ir,sig7ir,sig8ir;
-	 var sig1iil,sig2iil,sig3iil,sig4iil,sig5iil,sig6iil,sig7iil,sig8iil;
-	var sig1iir,sig2iir,sig3iir,sig4iir,sig5iir,sig6iir,sig7iir,sig8iir;
-				var sph, anglex,angley,anglez
-	var frames=~frames,sig1,sig2,silver=45,golden=45,l=1,r=1.neg,g=((1+5.sqrt)/2),s=(1+2.sqrt);
+	var sph, anglex,angley,anglez,in1,in2,in3,in4,n=0;
+	var frames=~frames,silver=45,golden=45,l=1,r=1.neg,g=((1+5.sqrt)/2),s=(1+2.sqrt);
 
 
     in1 = PlayBuf.ar(1, ~r1.bufnum, BufRateScale.kr(~r1.bufnum), loop: 0, doneAction:0);
@@ -83,15 +74,11 @@ SynthDef.new(\re_im, {
 	//in1 = SoundIn.ar(0);
 	//in2 = SoundIn.ar(1);
     in3 = PlayBuf.ar(1, ~i3.bufnum, BufRateScale.kr(~i3.bufnum), loop: 0, doneAction:0);
-	in4 = PlayBuf.ar(1, ~i4.bufnum, BufRateScale.kr(~i4.bufnum), loop: 0, doneAction:0);
-	//in3 = SoundIn.ar(0);
-	//in4 = SoundIn.ar(1);
-	 in5 = PlayBuf.ar(1, ~i5.bufnum, BufRateScale.kr(~i5.bufnum), loop: 0, doneAction:0);
-	in6 = PlayBuf.ar(1, ~i6.bufnum, BufRateScale.kr(~i6.bufnum), loop: 0, doneAction:0);
-	//in3 = SoundIn.ar(0);
-	//in4 = SoundIn.ar(1);
-	chain1 = FFT(LocalBuf(frames), in1);	chain3 = FFT(LocalBuf(frames), in3); chain5 = FFT(LocalBuf(frames), in5);
-	chain2 = FFT(LocalBuf(frames), in2);	chain4 = FFT(LocalBuf(frames), in4);  chain6 = FFT(LocalBuf(frames), in6);
+	//in3 = SoundIn.ar(2);
+
+
+	chain1 = FFT(LocalBuf(frames), in1);	chain3 = FFT(LocalBuf(frames), in3);
+	chain2 = FFT(LocalBuf(frames), in2);
 
 chain1rl = chain1.pvcollect(frames,
 						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0], tobin: ~nVals.[0], zeroothers: 1);
@@ -145,59 +132,8 @@ chain7il = chain3.pvcollect(frames,
 chain8il = chain3.pvcollect(frames,
 			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[6]+1, tobin: ~nVals.[7], zeroothers: 1);
 
-
-chain1ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; },  frombin: ~nVals.[0], tobin: ~nVals.[0], zeroothers: 1);
-chain2ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0]+1, tobin: ~nVals.[1], zeroothers: 1);
-chain3ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[1]+1, tobin: ~nVals.[2], zeroothers: 1);
-chain4ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[2]+1, tobin: ~nVals.[3], zeroothers: 1);
-chain5ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; },frombin: ~nVals.[3]+1, tobin: ~nVals.[4], zeroothers: 1);
-chain6ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[4]+1, tobin: ~nVals.[5], zeroothers: 1);
-chain7ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[5]+1, tobin: ~nVals.[6], zeroothers: 1);
-chain8ir = chain4.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[6]+1, tobin: ~nVals.[7], zeroothers: 1);
-
-chain1iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; },  frombin: ~nVals.[0], tobin: ~nVals.[0], zeroothers: 1);
-chain2iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0]+1, tobin: ~nVals.[1], zeroothers: 1);
-chain3iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[1]+1, tobin: ~nVals.[2], zeroothers: 1);
-chain4iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[2]+1, tobin: ~nVals.[3], zeroothers: 1);
-chain5iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[3]+1, tobin: ~nVals.[4], zeroothers: 1);
-chain6iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[4]+1, tobin: ~nVals.[5], zeroothers: 1);
-chain7iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[5]+1, tobin: ~nVals.[6], zeroothers: 1);
-chain8iil = chain5.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[6]+1, tobin: ~nVals.[7], zeroothers: 1);
-
-
-chain1iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; },  frombin: ~nVals.[0], tobin: ~nVals.[0], zeroothers: 1);
-chain2iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[0]+1, tobin: ~nVals.[1], zeroothers: 1);
-chain3iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[1]+1, tobin: ~nVals.[2], zeroothers: 1);
-chain4iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[2]+1, tobin: ~nVals.[3], zeroothers: 1);
-chain5iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; },frombin: ~nVals.[3]+1, tobin: ~nVals.[4], zeroothers: 1);
-chain6iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[4]+1, tobin: ~nVals.[5], zeroothers: 1);
-chain7iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[5]+1, tobin: ~nVals.[6], zeroothers: 1);
-chain8iir = chain6.pvcollect(frames,
-			{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[6]+1, tobin: ~nVals.[7], zeroothers: 1);
-
+	/*az=SinOsc.ar(azimuth,elevation).theta;
+				el=SinOsc.ar(azimuth,elevation).phi;*/
 		sph=SinOsc.ar(1,az,el);
 
 
@@ -215,14 +151,6 @@ sig5rr=IFFT(chain5rr);sig6rr=IFFT(chain6rr);sig7rr=IFFT(chain7rr);sig8rr=IFFT(ch
 sig1il=IFFT(chain1il);sig2il=IFFT(chain2il);sig3il=IFFT(chain3il);sig4il=IFFT(chain4il);
 sig5il=IFFT(chain5il);sig6il=IFFT(chain6il);sig7il=IFFT(chain7il);sig8il=IFFT(chain8il);
 
-sig1iir=IFFT(chain1ir);sig2iir=IFFT(chain2ir);sig3iir=IFFT(chain3ir);sig4iir=IFFT(chain4ir);
-sig5iir=IFFT(chain5ir);sig6iir=IFFT(chain6ir);sig7iir=IFFT(chain7ir);sig8iir=IFFT(chain8ir);
-
-sig1iil=IFFT(chain1iil);sig2iil=IFFT(chain2iil);sig3iil=IFFT(chain3iil);sig4iil=IFFT(chain4iil);
-sig5iil=IFFT(chain5iil);sig6iil=IFFT(chain6iil);sig7iil=IFFT(chain7iil);sig8iil=IFFT(chain8iil);
-
-sig1iir=IFFT(chain1iir);sig2iir=IFFT(chain2iir);sigiir=IFFT(chain3iir);sig4iir=IFFT(chain4iir);
-sig5iir=IFFT(chain5iir);sig6iir=IFFT(chain6iir);sig7iir=IFFT(chain7iir);sig8iir=IFFT(chain8iir);
 
 /*(
 amp1=SinOsc.kr(0.023219954648526,0.degrad,0.2);
@@ -241,22 +169,18 @@ amp5a=SinOsc.kr(0.023219954648526,(90+180).degrad);
 amp6a=SinOsc.kr(0.023219954648526,(90+180+45).degrad);
 amp7a=SinOsc.kr(0.023219954648526,(90+180+90).degrad);
 amp8a=SinOsc.kr(0.023219954648526,90.degrad);
+				az=SinOsc.ar(azimuth,elevation).theta;
+				el=SinOsc.ar(azimuth,elevation).phi;
 				)*/
 
 Out.ar(0,Pan2.ar(sig1rl,anglex,amp1));Out.ar(0,Pan2.ar(sig2rl,anglex,amp2));Out.ar(0,Pan2.ar(sig3rl,anglex,amp3));Out.ar(0,Pan2.ar(sig4rl,anglex,amp4));
 Out.ar(0,Pan2.ar(sig5rl,anglex,amp5));Out.ar(0,Pan2.ar(sig6rl,anglex,amp6));Out.ar(0,Pan2.ar(sig7rl,anglex,amp7));Out.ar(0,Pan2.ar(sig8rl,anglex,amp8));
-Out.ar(0,Pan2.ar(sig1rr,anglez,amp1));Out.ar(0,Pan2.ar(sig2rr,anglez,amp2));Out.ar(0,Pan2.ar(sig3rr,anglez,amp3));Out.ar(0,Pan2.ar(sig4rr,anglez,amp4));
-Out.ar(0,Pan2.ar(sig5rr,anglez,amp5));Out.ar(0,Pan2.ar(sig6rr,anglez,amp6));Out.ar(0,Pan2.ar(sig7rr,anglez,amp7));Out.ar(0,Pan2.ar(sig8rr,anglez,amp8));
+Out.ar(0,Pan2.ar(sig1rr,angley,amp1a));Out.ar(0,Pan2.ar(sig2rr,angley,amp2a));Out.ar(0,Pan2.ar(sig3rr,angley,amp3a));Out.ar(0,Pan2.ar(sig4rr,angley,amp4a));
+Out.ar(0,Pan2.ar(sig5rr,angley,amp5a));Out.ar(0,Pan2.ar(sig6rr,angley,amp6a));Out.ar(0,Pan2.ar(sig7rr,angley,amp7a));Out.ar(0,Pan2.ar(sig8rr,angley,amp8a));
 
-Out.ar(0,Pan2.ar(sig1il,anglex,amp1a));Out.ar(0,Pan2.ar(sig2il,anglex,amp2a));Out.ar(0,Pan2.ar(sig3il,anglex,amp3a));Out.ar(0,Pan2.ar(sig4il,anglex,amp4a));
-Out.ar(0,Pan2.ar(sig5il,anglex,amp5a));Out.ar(0,Pan2.ar(sig6il,anglex,amp6a));Out.ar(0,Pan2.ar(sig7il,anglex,amp7a));Out.ar(0,Pan2.ar(sig8il,anglex,amp8a));
-Out.ar(0,Pan2.ar(sig1ir,anglez,amp1a));Out.ar(0,Pan2.ar(sig2ir,anglez,amp2a));Out.ar(0,Pan2.ar(sig3ir,anglez,amp3a));Out.ar(0,Pan2.ar(sig4ir,anglez,amp4a));
-Out.ar(0,Pan2.ar(sig5ir,anglez,amp5a));Out.ar(0,Pan2.ar(sig6ir,anglez,amp6a));Out.ar(0,Pan2.ar(sig7ir,anglez,amp7a));Out.ar(0,Pan2.ar(sig8ir,anglez,amp8a));
+Out.ar(0,Pan2.ar(sig1il,anglez,amp1aa));Out.ar(0,Pan2.ar(sig2il,anglez,amp2aa));Out.ar(0,Pan2.ar(sig3il,anglez,amp3aa));Out.ar(0,Pan2.ar(sig4il,anglez,amp4aa));
+Out.ar(0,Pan2.ar(sig5il,anglez,amp5aa));Out.ar(0,Pan2.ar(sig6il,anglez,amp6aa));Out.ar(0,Pan2.ar(sig7il,anglez,amp7aa));Out.ar(0,Pan2.ar(sig8il,anglez,amp8aa));
 
-Out.ar(0,Pan2.ar(sig1il,anglez.neg,amp1aa));Out.ar(0,Pan2.ar(sig2iil,anglez.neg,amp2aa));Out.ar(0,Pan2.ar(sig3iil,anglez.neg,amp3aa));Out.ar(0,Pan2.ar(sig4iil,anglez.neg,amp4aa));
-Out.ar(0,Pan2.ar(sig5iil,anglez.neg,amp5aa));Out.ar(0,Pan2.ar(sig6iil,anglez.neg,amp6aa));Out.ar(0,Pan2.ar(sig7iil,anglez.neg,amp7aa));Out.ar(0,Pan2.ar(sig8iil,anglez.neg,amp8aa));
-Out.ar(0,Pan2.ar(sig1iir,anglez,amp1aa));Out.ar(0,Pan2.ar(sig2iir,anglez,amp2aa));Out.ar(0,Pan2.ar(sig3iir,anglez,amp3aa));Out.ar(0,Pan2.ar(sig4iir,anglez,amp4aa));
-Out.ar(0,Pan2.ar(sig5iir,anglez,amp5aa));Out.ar(0,Pan2.ar(sig6iir,anglez,amp6aa));Out.ar(0,Pan2.ar(sig7iir,anglez,amp7aa));Out.ar(0,Pan2.ar(sig8iir,anglez,amp8aa));
 
 }).add;
 );

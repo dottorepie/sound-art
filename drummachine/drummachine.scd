@@ -69,7 +69,7 @@ SynthDef(\kick, {
 	var sph,phase,threshold,ton=2.pow(n/12),az=pi,el=pi/2,m=2;
 	var sig1,sig2,sig3,phasex,phasey,phasez,control1,control2,control3;
 
-	freq = EnvGen.kr(Env([freq, fund], [decay/8], curve: -4)); // pitch drop
+	freq = EnvGen.kr(Env([fund*ton, fund], [decay/8], curve: -4)); // pitch drop
 	env= EnvGen.kr(Env.perc(attack, decay, curve: -4),doneAction:2,levelScale:amp);
 
 			threshold=(((343/0.14)/freq).reciprocal.ampdb/2.sqrt).dbamp;
@@ -127,7 +127,7 @@ sig1 = sig1 + (sig1 * BrownNoise.ar(noise)); sig2 = sig2 + (sig2 * BrownNoise.ar
 
 }).add;);
 
-//Synth(\kick);
+Synth(\kick);
 
 /////snare
 (
@@ -556,9 +556,10 @@ TempoClock.default.tempo_(4);
 
 
 (
+var n=1.neg;
 r = Routine {
-	loop{ 4.do{ 10.rand.postln; 1.wait;};
-		1.wait;
+	loop{ 6.do{n=n+1; Synth(\kick); ~dur1.[n].wait;};n=1.neg;
+		2.wait;
 };
 
 }

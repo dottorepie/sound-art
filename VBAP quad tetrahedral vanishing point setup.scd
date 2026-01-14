@@ -220,8 +220,8 @@ angle2y=Complex(exp(Complex(0,1)*sph2.theta).real,exp(Complex(0,1)*sph2.phi).ima
 anglex=Complex(exp(Complex(0,1)*angle1x).real,exp(Complex(0,1)*angle1y).imag).theta;
 angley=Complex(exp(Complex(0,1)*angle2x).real,exp(Complex(0,1)*angle2y).imag).theta;
 
-angle=Complex(exp(Complex(0,1)*anglex).real,exp(Complex(0,1)*angley).imag).theta;
-
+//angle=Complex(exp(Complex(0,1)*anglex).real,exp(Complex(0,1)*angley).imag).theta;
+angle= anglex-angley;
 pos1=exp(Complex(0,1)*angle).real;
 pos2=exp(Complex(0,1)*angle).imag;
 
@@ -231,4 +231,20 @@ out1=Out.ar(0,Pan2.ar(sig,pos1)*pan1);
 out2=Out.ar(0,Pan2.ar(sig,pos2)*pan2);
 
 }.play)}
+)
+//////////
+
+
+(
+var anglex,angley,phasex,phasey,polytope;
+
+polytope=Spherical(1,pi/2,0);
+
+anglex=(exp(Complex(0,1)*polytope.theta).real*exp(Complex(0,1)*polytope.phi).real).round(0.00001);
+angley=(exp(Complex(0,1)*polytope.theta).imag*exp(Complex(0,1)*polytope.phi).real).round(0.00001);
+
+
+phasex=Complex(anglex,0).theta.postln;
+phasey=Complex(0,angley).theta.postln;
+
 )

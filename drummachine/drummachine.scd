@@ -1,27 +1,3 @@
-///compression notes
-//	slopeAbove:
-//4" → 0.35–0.45
-//5" → 0.45–0.60
-//8" → 0.60–0.80
-		///the larger the speaker cone the more relax time is possible and less difference between slopes, also less threshhold//Relax time ≈ 5–10× the attack time
-//clampTime (attack)
-//Fast attack → kills transients → fewer high-frequency spikes
-//Slow attack → transients pass → brighter sound
-//relaxTime (release)
-//Fast release → pumping, rhythmic spectral motion
-//Slow release → smoother, denser spectrum
-//Relax too short (< 80 ms)
-//Bass “breathes”
-//Mids wobble
-//Small speakers sound cheap
-//Relax too long (> 300 ms)
-//Bass dominates gain control
-//Mix sounds flat, distant
-//Quiet detail doesn’t recover fast enough
-//tanh saturation mul less as speaker size increase///
-
-
-
 (
 (
 s.options.numWireBufs = 1024*2;
@@ -39,7 +15,8 @@ s.options.sampleRate= 44100;
 );
 (
 s.waitForBoot{
-	//Buffer.freeAll;
+	Tdef(\drone, {
+	Buffer.freeAll;
 (
 (
 ~n=1.neg;~array=992.collect{~n=~n+1;2.pow(~n/992)};
@@ -129,7 +106,7 @@ sig1 = sig1 + (sig1 * BrownNoise.ar(noise)); sig2 = sig2 + (sig2 * BrownNoise.ar
 
 }).add;);
 
-Synth(\kick);
+//Synth(\kick);
 
 /////snare
 (
@@ -564,7 +541,7 @@ m3=m3+1;
 		))
 );
 
-)
+);
 
 
 
@@ -577,100 +554,37 @@ TempoClock.default.tempo_(4);
 ~ride.play;
 ~crash.play;
 ~tom.play;
-~kick.pause;
-~snare.pause;
-~hihat.pause;
-~ride.pause;
-~crash.pause;
-~tom.pause;
-)
+//~kick.pause;
+//~snare.pause;
+//~hihat.pause;
+//~ride.pause;
+//~crash.pause;
+//~tom.pause;
+);
 
-})
+2.wait;
 
-/*
-(
-var n=1.neg;
-r = Routine {
-	loop{ 6.do{n=n+1; Synth(\kick,[	\amp,10,\n,24,\pan,1,\low,0,\noise,0.001,\decay,1,\attack,0.01;]);
-		~dur1.[n].wait;};n=1.neg;
-		//2.wait;
-};
-
+});
+	Tdef(\drone).play;
 }
+)
+)
+
+
+////seq cheeck
+(
+(
+		~kick=Pdef(\1, Pbind(\instrument, \kick,
+			\dur,Pseq(~dur1,inf),
+				\amp,10,
+				\n,24,
+				\pan,1,
+			\low,0,
+				\noise,0.001,
+				\decay,1,
+				\attack,0.01;
+		))
 );
 
-r.play
-
-	///tetrahedron
-(
-~az=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
-~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];
-);
-//////cube
-(
-~az=[45.degrad,135.degrad,45.neg.degrad,135.neg.degrad,45.degrad,135.degrad,45.neg.degrad,135.neg.degrad];
-~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad];
+~kick.play;
 )
-
-/////octahedron
-
-(
-~az=[0.degrad,0.degrad,90.degrad,180.degrad,90.neg.degrad,0.degrad];
-~el=[90.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,90.degrad];
-)
-
-//////icosahedron
-(
-~az=[90.degrad,90.neg.degrad,0.degrad,180.degrad,58.28.degrad,121.72.degrad,121.72.neg.degrad,58.neg.degrad,90.degrad,90.neg.degrad,0.degrad,180.degrad];
-~el=[58.28.neg.degrad,58.28.neg.degrad,31.72.neg.degrad,31.72.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,58.28.degrad,58.28.degrad,31.72.degrad,31.72.degrad];
-)
-
-/////dodecahedron
-
-(
-~az=[45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,90.degrad,90.neg.degrad,0.degrad,180.degrad,45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,90.degrad,
-	90.neg.degrad,69.09.degrad,110.91.degrad,110.91.neg.degrad,69.09.neg.degrad,0.degrad,180.degrad];
-
-~el=[35.26.neg.degrad,35.26.neg.degrad,35.26.neg.degrad,35.26.neg.degrad,69.09.neg.degrad,69.09.neg.degrad,20.91.neg.degrad,20.91.neg.degrad,
-	35.26.degrad,35.26.degrad,35.26.degrad,35.26.degrad,69.09.degrad,69.09.degrad,0.degrad,0.degrad,0.degrad,0.degrad,20.91.degrad,20.91.degrad]
-)
-
-/////Rhombic dodecahedron//// hull
-
-(
-~az=[0.degrad,45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,0.degrad,180.degrad,90.degrad,90.neg.degrad,0.degrad,
-	45.degrad,135.neg.degrad,135.degrad,45.neg.degrad];
-~el=[90.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,0.degrad
-	,0.degrad,0.degrad,0.degrad,90.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad];
-)
-
-/////cuboctahedron//// core
-
-(
-~az=[0.degrad,90.degrad,180.degrad,90.neg.degrad,45.degrad,135.degrad,45.neg.degrad,135.neg.degrad,
-	0.degrad,90.degrad,180.degrad,90.neg.degrad];
-~el=[45.neg.degrad,45.neg.degrad,45.neg.degrad,45.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,
-	45.degrad,45.degrad,45.degrad,45.degrad];
-)
-
-
-///////////////Rhombic Triacontahedron//// hull
-(
-~az=[0.degrad,0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,
-	0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,
-	0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,0.degrad];
-
-~el=[90.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,52.6.degrad,52.6.degrad,52.6.degrad,52.6.degrad,52.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,10.8.degrad,10.8.degrad,10.8.degrad,10.8.degrad,10.8.degrad,90.degrad];
-
-)
-
-///////icosidodecahedron//// core
-(
-~az=[18.degrad,90.degrad,162.degrad,126.neg.degrad,54.neg.degrad,54.degrad,126.degrad,162.neg.degrad,90.neg.degrad,18.neg.degrad,
-	0.degrad,36.degrad,72.degrad,108.degrad,144.degrad,180.degrad,144.neg.degrad,108.neg.degrad,72.neg.degrad,36.neg.degrad,
-	54.degrad,126.degrad,162.neg.degrad,90.neg.degrad,18.neg.degrad,18.degrad,90.degrad,162.degrad,126.neg.degrad,54.neg.degrad];
-
-~el=[58.283.degrad,58.283.degrad,58.283.degrad,58.283.degrad,58.283.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,
-37.717.degrad,37.717.degrad,37.717.degrad,37.717.degrad,37.717.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad];
-
-)*/

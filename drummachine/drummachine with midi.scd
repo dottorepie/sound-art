@@ -1,24 +1,4 @@
-///compression notes
-//	slopeAbove:
-//4" → 0.35–0.45
-//5" → 0.45–0.60
-//8" → 0.60–0.80
-		///the larger the speaker cone the more relax time is possible and less difference between slopes, also less threshhold//Relax time ≈ 5–10× the attack time
-//clampTime (attack)
-//Fast attack → kills transients → fewer high-frequency spikes
-//Slow attack → transients pass → brighter sound
-//relaxTime (release)
-//Fast release → pumping, rhythmic spectral motion
-//Slow release → smoother, denser spectrum
-//Relax too short (< 80 ms)
-//Bass “breathes”
-//Mids wobble
-//Small speakers sound cheap
-//Relax too long (> 300 ms)
-//Bass dominates gain control
-//Mix sounds flat, distant
-//Quiet detail doesn’t recover fast enough
-//tanh saturation mul less as speaker size increase///
+
 
 
 
@@ -39,7 +19,8 @@ s.options.sampleRate= 44100;
 );
 (
 s.waitForBoot{
-	//Buffer.freeAll;
+	Tdef(\drone, {
+	Buffer.freeAll;
 (
 (
 ~n=1.neg;~array=992.collect{~n=~n+1;2.pow(~n/992)};
@@ -585,7 +566,257 @@ TempoClock.default.tempo_(4);
 ~tom.pause;
 )
 
-})
+2.wait;
+(
+MIDIClient.init;
+MIDIIn.connectAll;
+		(
+MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
+		var gain;
+	//[val, num, chan, src].postln;
+	gain=val.linlin(0,127,0,10).round(0.000001);
+
+		gain.postln;
+		if(~synth.isPlaying,{~synth.set(\gain,gain)});
+},20);
+				);
+	(
+MIDIdef.cc(\midi_pot2,{ |val, num, chan, src|
+		var pan;
+		pan=val.linlin(0,127,(992*4).neg,(992*4)).round(0.00001).round(1).asInteger;
+		pan.postln;
+		if(~synth.isPlaying,{~synth.set(\pan,pan)});
+},21);
+	);
+
+			(
+MIDIdef.cc(\midi_pot3,{ |val, num, chan, src|
+		var room;
+	//[val, num, chan, src].postln;
+	room=val.linlin(0,127,0,1).round(0.000001);
+
+		room.postln;
+		if(~synth.isPlaying,{~synth.set(\room,room)});
+},24);
+	);
+
+	(
+MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
+		 var mix;
+	mix=val.linlin(0,127,0,1).round(0.00001);
+		mix.postln;
+		if(~synth.isPlaying,{~synth.set(\mix,mix)});
+},25);
+	);
+				(
+MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
+		var a;
+	//[val, num, chan, src].postln;
+	a=val.linlin(0,127,0,4).round(1).round(1).asInteger;
+
+		a.postln;
+		if(~synth.isPlaying,{~synth.set(\a,a)});
+},26);
+	);
+
+	(
+MIDIdef.cc(\midi_pot6,{ |val, num, chan, src|
+         var low;
+					low=val.linlin(0,127,0,(992*4)).round(1).asInteger;
+		low.postln;
+		if(~synth.isPlaying,{~synth.set(\low,low)});
+},27);
+	);
+
+		(
+MIDIdef.cc(\midi_pot7,{ |val, num, chan, src|
+		var band;
+	band=val.linlin(0,127,(992*4).neg,992*8).round(1).asInteger;
+		band.postln;
+		if(~synth.isPlaying,{~synth.set(\band,band)});
+},28);
+	);
+					(
+MIDIdef.cc(\midi_pot8,{ |val, num, chan, src|
+		var tone;
+		tone=val.linlin(0,127,0,992*4).round(1).asInteger;
+		tone.postln;
+		if(~synth.isPlaying,{~synth.set(\tone,tone)});
+},29);
+	);
+					(
+MIDIdef.cc(\midi_pot9,{ |val, num, chan, src|
+		var loc;
+		loc=val.linlin(0,127,0,3248).round(1).asInteger;
+		loc.postln;
+		if(~synth.isPlaying,{~synth.set(\brain,loc)});
+},31);
+	);
+								(
+MIDIdef.cc(\midi_pot10,{ |val, num, chan, src|
+		var rq;
+		rq=val.linlin(0,127,0.1,1).round(0.00001);
+		rq.postln;
+		if(~synth.isPlaying,{~synth.set(\rq,rq)});
+},32);
+	);
+								(
+MIDIdef.cc(\midi_pot11,{ |val, num, chan, src|
+		var b;
+		b=val.linlin(0,127,0.0001,12).round(0.00001);
+		b.postln;
+		if(~synth.isPlaying,{~synth.set(\b,b)});
+},33);
+	);
+						(
+MIDIdef.cc(\midi_pot12,{ |val, num, chan, src|
+		var sph;
+		sph=val.linlin(0,127,0,3).round(1).asInteger;
+		sph.postln;
+		if(~synth.isPlaying,{~synth.set(\m,sph)});
+},36);
+	);
+
+
+	(
+MIDIdef.cc(\midi_switch1,{ |val, num, chan, src|
+		var lamdoma, n=1, a=1;
+				if(val>0,lamdoma=1);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},38);
+	);
+	(
+MIDIdef.cc(\midi_switch2,{ |val, num, chan, src|
+		 var lamdoma, n=1, a=1;
+					if(val>0,lamdoma=2);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},39);
+	);
+		(
+MIDIdef.cc(\midi_switch3,{ |val, num, chan, src|
+		var lamdoma, n=2, a=1;
+					if(val>0,lamdoma=3);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},40);
+	);
+
+	(
+MIDIdef.cc(\midi_switch4,{ |val, num, chan, src|
+         var lamdoma, n=3, a=1;
+				if(val>0,lamdoma=4);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},41);
+	);
+		(
+MIDIdef.cc(\midi_switch5,{ |val, num, chan, src|
+		var lamdoma, n=4, a=1;
+				if(val>0,lamdoma=5);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},42);
+	);
+					(
+MIDIdef.cc(\midi_switch6,{ |val, num, chan, src|
+		var lamdoma, n=5, a=1;
+					if(val>0,lamdoma=6);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},43);
+					);
+	(
+MIDIdef.cc(\midi_switch7,{ |val, num, chan, src|
+		var lamdoma, n=1, a=1;
+				if(val>0,lamdoma=7);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},44);
+	);
+	(
+MIDIdef.cc(\midi_switch8,{ |val, num, chan, src|
+		 var lamdoma, n=1, a=1;
+						if(val>0,lamdoma=8);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},45);
+	);
+		(
+MIDIdef.cc(\midi_switch9,{ |val, num, chan, src|
+		var lamdoma, n=2, a=1;
+					if(val>0,lamdoma=9);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},46);
+	);
+
+	(
+MIDIdef.cc(\midi_switch10,{ |val, num, chan, src|
+         var lamdoma, n=3, a=1;
+				if(val>0,lamdoma=10);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},47);
+	);
+		(
+MIDIdef.cc(\midi_switch11,{ |val, num, chan, src|
+		var lamdoma, n=4, a=1;
+				if(val>0,lamdoma=11);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},48);
+	);
+					(
+MIDIdef.cc(\midi_switch12,{ |val, num, chan, src|
+		var lamdoma, n=5, a=1;
+					if(val>0,lamdoma=12);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},49);
+						);
+	(
+MIDIdef.cc(\midi_switch13,{ |val, num, chan, src|
+		var lamdoma, n=1, a=1;
+				if(val>0,lamdoma=13);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},50);
+	);
+	(
+MIDIdef.cc(\midi_switch14,{ |val, num, chan, src|
+		 var lamdoma, n=1, a=1;
+				if(val>0,lamdoma=14);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},51);
+	);
+		(
+MIDIdef.cc(\midi_switch15,{ |val, num, chan, src|
+		var lamdoma, n=2, a=1;
+					if(val>0,lamdoma=15);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},52);
+	);
+
+	(
+MIDIdef.cc(\midi_switch16,{ |val, num, chan, src|
+         var lamdoma, n=3, a=1;
+				if(val>0,lamdoma=16);
+		lamdoma.postln;
+		if(~synth.isPlaying,{~synth.set(\x,lamdoma)});
+},53);
+	);
+
+)
+});
+	Tdef(\drone).play;
+}
+)
+)
+
 
 /*
 (

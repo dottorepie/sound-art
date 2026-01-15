@@ -43,6 +43,8 @@ wt = signal.asWavetable;
 
 
 //////kick
+		///////////////set midi sequencer steps as gate on/of for synthdefs, some pots are for synth arguments,
+		///others for change of rhytmic pattern and re evaluation of patterns.
 	(
  (
 SynthDef(\kick, {

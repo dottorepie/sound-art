@@ -42,14 +42,14 @@ wt = signal.asWavetable;
 	(
  (
 SynthDef(\kick, {
-	arg amp=10,n=12,pan=1,low=0,noise=0.001,decay=1,attack=0.01;
+	arg amp=10,n=12,pan=1,low=0,noise=0.001,decay=1,attack=0.01,gate;
     var env,freq,anglex,angley,anglez,mod_anglex,mod_angley,mod_anglez,fund=32,mx,my,mz,magx,magz,magy;
 	var sph,phase,threshold,ton,az=pi,el=pi/2,m=2;
 	var sig1,sig2,sig3,phasex,phasey,phasez,control1,control2,control3;
-n=24;
+n=24;gate=1;
 			ton=2.pow(n/12);
 	freq = EnvGen.kr(Env([fund*ton, fund], [decay], curve: -4)); // pitch drop
-	env= EnvGen.kr(Env.perc(attack, decay, curve: -4),doneAction:2,levelScale:amp);
+	env= EnvGen.kr(Env.perc(attack, decay, curve: -4),gate,doneAction:2,levelScale:amp);
 
 			threshold=(((343/0.14)/freq).reciprocal.ampdb/2.sqrt).dbamp;
 

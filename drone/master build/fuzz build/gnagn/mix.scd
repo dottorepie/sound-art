@@ -33,7 +33,7 @@ s.meter;
 (
 ~r1 = Buffer.readChannel(s,,channels:0 );
 ~r2 = Buffer.readChannel(s,,channels:1 );
-~i3 = Buffer.readChannel(s,channels:0 );
+~i3 = Buffer.readChannel(s,,channels:0 );
 		);
 
 		(
@@ -190,12 +190,11 @@ Out.ar(0,Pan2.ar(sig1il,0,amp4));Out.ar(0,Pan2.ar(sig2il,0,amp5));Out.ar(0,Pan2.
 
 
 5.wait;
-		~synth=Synth.new(\re_im,[\amp1,0.33,\amp2,0.5,\amp3,0.2,\amp4,0.1,\amp5,1,\amp6,0.6,\az,pi/4,\el,pi/4]).register;
-			//,\amp7,0.3,\amp8,0.4,
-		//\amp1a,1,\amp2a,0.333,\amp3a,1,\amp4a,0.7,\amp5a,0.1,\amp6a,0.8,\amp7a,1,\amp8a,0.7,
-		//	\amp1aa,1,\amp2aa,0.333,\amp3aa,1,\amp4aa,0.7,\amp5aa,0.1,\amp6aa,0.8,\amp7aa,1,\amp8aa,0.7,\az,0,\el,pi/4).register;//s.record
-	//	~synth=Synth.new(\re_im);
-2.wait;
+		(
+~synth=Synth.new(\re_im,[\amp1,0,\amp2,0,\amp3,0,\amp4,0,\amp5,0,\amp6,0,\az,0,\el,0]).register;
+//s.record(duration:7200);
+);
+		// 2.wait;
 (
 MIDIClient.init;
 MIDIIn.connectAll;
@@ -205,7 +204,7 @@ MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
 
 	a1=val.linlin(0,127,0,1).round(0.000001);
 		a1.postln;
-					"i".postln;
+					"i1".postln;
 		if(~synth.isPlaying,{~synth.set(\amp1,a1)});
 },26);
 				);
@@ -214,7 +213,7 @@ MIDIdef.cc(\midi_pot2,{ |val, num, chan, src|
 		var a2;
 		a2=val.linlin(0,127,0,1).round(0.000001);
 		a2.postln;
-					"i".postln;
+					"i2".postln;
 		if(~synth.isPlaying,{~synth.set(\amp2,a2)});
 },27);
 	);
@@ -223,7 +222,7 @@ MIDIdef.cc(\midi_pot3,{ |val, num, chan, src|
 		var a3;
 	a3=val.linlin(0,127,0,1).round(0.000001);
 		a3.postln;
-					"i".postln;
+					"i3".postln;
 		if(~synth.isPlaying,{~synth.set(\amp3,a3)});
 },28);
 	);
@@ -232,7 +231,7 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 		var a4;
 	a4=val.linlin(0,127,0,1).round(0.000001);
 		a4.postln;
-					"r".postln;
+					"r4".postln;
 		if(~synth.isPlaying,{~synth.set(\amp4,a4)});
 },29);
 	);
@@ -242,7 +241,7 @@ MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
 		var a5;
 	a5=val.linlin(0,127,0,1).round(0.000001);
 		a5.postln;
-					"r".postln;
+					"r5".postln;
 		if(~synth.isPlaying,{~synth.(\amp5,a5)});
 },30);
 	);
@@ -252,7 +251,7 @@ MIDIdef.cc(\midi_pot6,{ |val, num, chan, src|
 		 var a6;
 	a6=val.linlin(0,127,0,1).round(0.00001);
 		a6.postln;
-					"r".postln;
+					"r6".postln;
 		if(~synth.isPlaying,{~synth.set(\amp6,a6)});
 },31);
 	);
@@ -408,11 +407,7 @@ MIDIdef.cc(\midi_pot6,{ |val, num, chan, src|
 
 )
 });
-	//Tdef(\drone).play;
+	Tdef(\drone).play;
 }
 )
-)
-(
-~synth=Synth.new(\re_im,[\amp1,0.33,\amp2,0.5,\amp3,0.2,\amp4,0.1,\amp5,1,\amp6,0.6,\az,pi/4,\el,pi/4]).register;
-s.record(duration:7200);
 )

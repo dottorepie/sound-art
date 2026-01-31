@@ -3,7 +3,7 @@
 (
 (
 s.options.numWireBufs = 1024*2;
-s.options.numOutputBusChannels=2;
+s.options.numOutputBusChannels=16;
 s.options.numInputBusChannels=0;
 s.options.memSize = 8192*4;
 s.options.blockSize = 64;
@@ -103,36 +103,20 @@ m3=m3+1;
 }.value;
 );
 
-
-TempoClock.default.tempo_(4);
-		~controlBus_a = Bus.control(s, 1);
-			~ccBus = Bus.control(s, 1);
-~ccBus.set(0.5);
-
-MIDIdef.cc(\busCC, { |val|
-    ~ccBus.set(val.linlin(0, 127, 0, 1));
-}, 1);
-
-
-	r = Routine({
-    var v, i = 0;
-    loop {
-        // get value from bus asynchronously
-        ~ccBus.get({ |val|
-            v = val;
-					Out.kr(~controlBus_a.index,DC.ar(v));
-				1.postln;
-        });
-
-        // wait according to the array
-        (~dur1[i]).wait;
-
-        // increment index, wrap around
-        i = (i + 1) % ~dur1.size;
-    }
-}).play;
-
-
+		~controlBus_1 = Bus.control(s, 1);
+		~controlBus_2 = Bus.control(s, 1);
+		~controlBus_3 = Bus.control(s, 1);
+		~controlBus_4 = Bus.control(s, 1);
+		~controlBus_5 = Bus.control(s, 1);
+		~controlBus_6 = Bus.control(s, 1);
+		~controlBus_7 = Bus.control(s, 1);
+		~controlBus_8 = Bus.control(s, 1);
+		~controlBus_9 = Bus.control(s, 1);
+	    ~controlBus_10 = Bus.control(s, 1);
+		~controlBus_11 = Bus.control(s, 1);
+		~controlBus_12 = Bus.control(s, 1);
+	    ~controlBus_13 = Bus.control(s, 1);
+		~controlBus_14 = Bus.control(s, 1);
 
 ////// wavetables
 
@@ -156,23 +140,37 @@ wt = signal.asWavetable;
 		}.value;
 );
 
+////control synth
+(
+SynthDef.new(\csynth,{
 
-		///at high freq modulation possible distorion along with gain
-		/*(
-{
+	arg gain=1,low=992,tone=0,band=1,a=1,rq=1,pan=1,m=2,az=0,el=0,attack=0.01,decay=4,curve,-4x=1;
 
-    z = Saw.ar(220, mul: 10);
-	LeakDC.ar(Slew.ar(z,SinOsc.ar(220,0.degrad,220*8).abs ,SinOsc.ar(220,90.degrad,220*8).abs))
+				Out.kr(~controlBus_1.index,DC.kr(x));
+				Out.kr(~controlBus_2.index,DC.kr(gain));
+				Out.kr(~controlBus_3.index,DC.kr(low));
+				Out.kr(~controlBus_4.index,DC.kr(tone));
+				Out.kr(~controlBus_5.index,DC.kr(band));
+				Out.kr(~controlBus_6.index,DC.kr(a));
+				Out.kr(~controlBus_7.index,DC.kr(rq));
+				Out.kr(~controlBus_8.index,DC.kr(pan));
+				Out.kr(~controlBus_9.index,DC.kr(m));
+				Out.kr(~controlBus_10.index,DC.kr(az));
+				Out.kr(~controlBus_11.index,DC.kr(ell));
+				Out.kr(~controlBus_12.index,DC.kr(attack));
+				Out.kr(~controlBus_13.index,DC.kr(decay));
+				Out.kr(~controlBus_14.index,DC.kr(curve));
 
-}.play
-)*/
+			}
+).add;);
 
+		////sound
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,band=1,a=1,rq=0.1,pan=1,m=2,az,el;
+	var gain=1,low=992,tone=0,band=1,a=1,rq=0.1,pan=1,m=2,az=0,el=0,x=1,env,attack,decay,curve;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
-	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3,x=1;
+	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,mix=0.4,room=0.7;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
 	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,spread=1,mq=(m-1),choice,nn=0,lfo,sph1,loc1,loc2,loc3;
@@ -180,13 +178,27 @@ SynthDef.new(\synth,{
 fund=16*(9/8);
 
 
-				x=~controlBus_a.getSynchronous;
+				x=~controlBus_1.getSynchronous;
+				gain=~controlBus_2.getSynchronous;
+				low=~controlBus_3.getSynchronous;
+				tone=~controlBus_4.getSynchronous;
+				band=~controlBus_5.getSynchronous;
+				a=~controlBus_6.getSynchronous;
+				rq=~controlBus_7.getSynchronous;
+				pan=~controlBus_8.getSynchronous;
+				m=~controlBus_9.getSynchronous;
+				az=~controlBus_10.getSynchronous;
+				el=~controlBus_11.getSynchronous;
+				attack~controlBus_12.getSynchronous;
+				decay=~controlBus_13.getSynchronous;
+				curve=~controlBus_14.getSynchronous;
 
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 
 
-polytope = Spherical(lamdoma * 56, az, el);
+polytope = Spherical(lamdoma * 56, az.lag(0.01), el.lag(0.01));
 
+				env=EnvGen.ar(Env.perc(attack,decay,curve),doneAction:2);
 
 b_x=2.pow(polytope.x.round(1)/56);
 b_y=2.pow(polytope.y.round(1)/56);
@@ -313,21 +325,23 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 					gain2=gain*rq2.sqrt.reciprocal;
 					gain3=gain*rq3.sqrt.reciprocal;
 
-					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1),mul:loc1.abs),0.9,0.01));
-					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2),mul:loc2.abs),0.9,0.01));
-					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3),mul:loc3.abs),0.9,0.01));
+					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1),mul:loc1.abs),0.9,0.01)*env);
+					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2),mul:loc2.abs),0.9,0.01)*env);
+					//Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3),mul:loc3.abs),0.9,0.01)*env);
 
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1),SinOsc.ar(lfo,phase1).range(0,1/2.sqrt)),0.8,0.01),loc1));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2),SinOsc.ar(lfo,phase2).range(0,1/2.sqrt)),0.8,0.01),loc2));
-Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3),SinOsc.ar(lfo,phase3).range(0,1/2.sqrt)),0.8,0.01),loc3));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(
+						sig1,mix.lag(0.01),room.lag(0.01),mul:gain1),SinOsc.ar(lfo,phase1).range(0,1/2.sqrt)),0.8,0.01),loc1,env));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(
+						sig2,mix.lag(0.01),room.lag(0.01),mul:gain2),SinOsc.ar(lfo,phase2).range(0,1/2.sqrt)),0.8,0.01),loc2,env));
+Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(
+						sig3,mix.lag(0.01),room.lag(0.01),mul:gain3),SinOsc.ar(lfo,phase3).range(0,1/2.sqrt)),0.8,0.01),loc3,env));
 
 
 			}
 }).add;);
 
 3.wait;
-~synth=Synth.new(\synth,[\gain,10,\tone,0,\low,0,\a,1,\pan,0.1,\band,(992*2).neg,\x,1,\m,1,\rq,1,\az,0,\el,0]).register;//s.record
-
+~synth=Synth.new(\csynth,[\gain,10,\tone,0,\low,0,\a,1,\pan,0.1,\band,(992*2).neg,\x,1,\m,1,\rq,1,\az,0,\el,0]).register;//s.record
 (
 		~s=Pdef(\1, Pbind(\instrument, \synth,
 			\dur,Pseq(~dur1,inf),
@@ -434,9 +448,47 @@ MIDIdef.cc(\midi_pot10,{ |val, num, chan, src|
 		az=val.linlin(0,127,pi.neg,pi);
 		az.postln;
 		if(~synth.isPlaying,{~synth.set(\az,az)});
-},27);
+},41);
 	);
 
+										(
+MIDIdef.cc(\midi_pot11,{ |val, num, chan, src|
+		var at;
+		at=val.linlin(0,127,0.01,4);
+		at.postln;
+		if(~synth.isPlaying,{~synth.set(\attack,at)});
+},41);
+	);
+
+
+												(
+MIDIdef.cc(\midi_pot12,{ |val, num, chan, src|
+		var dec;
+		dec=val.linlin(0,127,1,8);
+		dec.postln;
+		if(~synth.isPlaying,{~synth.set(\decay,dec)});
+},42);
+	);
+
+
+												(
+MIDIdef.cc(\midi_pot13,{ |val, num, chan, src|
+		var cu;
+		cu=val.linlin(0,127,1.neg,16.neg);
+		cu.postln;
+		if(~synth.isPlaying,{~synth.set(\curve,cu)});
+},43);
+	);
+
+
+									(
+MIDIdef.cc(\midi_pot14,{ |val, num, chan, src|
+		var t;
+					t=val.linlin(0,1/8,8).round(0.25);
+		t.postln;
+		TempoClock.default.tempo_(t);
+},45);
+	);
 
 	(
 MIDIdef.cc(\midi_switch1,{ |val, num, chan, src|

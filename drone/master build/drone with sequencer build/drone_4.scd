@@ -34,7 +34,105 @@ s.meter;
 				[[45, 35.264390.neg],[135.neg, 35.264390.neg],[45.neg, 35.264390],[135,35.264390]]);
 	 ~b = Buffer.loadCollection(s, ~a.getSetsAndMatrices);
 );*/
-/////////////osc polytope3
+/////////////osc polytope sequencer
+			////durs
+		(
+{
+var  sph1,sph2,az1=0,el1=0,az2=0,el2=0,angle=0;
+var azimuth,elevation,spread=1,silver_r=(1+2.sqrt);
+var mag1=1,mag2=1,mag3=1,mag4=1,mag5=1,mag6=1,mag7=1;
+	~az=[];~el=[];
+
+	16.do{
+azimuth=32.collect{
+			az1 = (az1+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
+		   el1 = (el1+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
+
+//	mag1=(mag1+(1-(1/1.6180339887499))).wrap(0,1);
+sph1=(Spherical(mag1,(az1+angle).wrap(pi.neg,pi),(el1+angle).wrap((pi/2).neg,(pi/2)))).theta.round(0.000000000001);
+
+	};
+
+elevation=32.collect{
+				az2 = (az2+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
+			el2 = (el2+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
+
+	//mag2=(mag2+(1-(1/1.6180339887499))).wrap(0,1);
+		sph2=(Spherical(mag2,(az2+angle).wrap(pi.neg,pi),(el2+angle).wrap((pi/2).neg,(pi/2)))).phi.round(0.000000000001);
+
+	};
+
+
+angle=(angle+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
+~az=~az++azimuth;~el=~el++elevation;
+	}
+}.value;
+)
+
+		(
+~azr=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
+~elr=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];
+);
+
+	({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c,n=0,bank=4,time=16.reciprocal,beat=1;
+
+~dur1=[];~dur2=[];~dur3=[];
+
+~x=bank.collect{
+m1=m1+1;
+	b=Spherical(beat,~azr.[m1],~elr.[m1]).x.round(0.00001);
+	2.pow(b).round(time);
+};
+~y=bank.collect{
+m2=m2+1;
+	c=Spherical(beat,~azr.[m2],~elr.[m2]).y.round(0.00001);
+	2.pow(c).round(time);
+};
+~z=bank.collect{
+m3=m3+1;
+	d=Spherical(beat,~azr.[m3],~elr.[m3]).z.round(0.00001);
+	2.pow(d).round(time);
+};
+		bank.do{ ~dur1=~dur1++~x.[n];n=n+1;};n=0;
+		bank.do{ ~dur2=~dur2++~y.[n];n=n+1;};n=0;
+		bank.do{ ~dur3=~dur3++~z.[n];n=n+1;};n=0;
+	//	bank.do{~durs=~durs++~x.[n]++~y.[n]++~z.[n];n=n+1;}
+//	~dur = ~duri.collect { |x|
+  //  if (x == 0) { Rest(2) } { x }
+//	}
+}.value;
+);
+
+
+TempoClock.default.tempo_(4);
+		~controlBus_a = Bus.control(s, 1);
+			~ccBus = Bus.control(s, 1);
+~ccBus.set(0.5);
+
+MIDIdef.cc(\busCC, { |val|
+    ~ccBus.set(val.linlin(0, 127, 0, 1));
+}, 1);
+
+
+	r = Routine({
+    var v, i = 0;
+    loop {
+        // get value from bus asynchronously
+        ~ccBus.get({ |val|
+            v = val;
+					Out.kr(~controlBus_a.index,DC.ar(v));
+				1.postln;
+        });
+
+        // wait according to the array
+        (~dur1[i]).wait;
+
+        // increment index, wrap around
+        i = (i + 1) % ~dur1.size;
+    }
+}).play;
+
+
 
 ////// wavetables
 
@@ -72,14 +170,18 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,band=1,x=1,a=1,rq=0.1,pan=1,m=2,az,el;
+	arg gain=1,low=992,tone=0,band=1,a=1,rq=0.1,pan=1,m=2,az,el;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
-	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
+	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3,x=1;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,mix=0.4,room=0.7;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
 	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,spread=1,mq=(m-1),choice,nn=0,lfo,sph1,loc1,loc2,loc3;
 
 fund=16*(9/8);
+
+
+				x=~controlBus_a.getSynchronous;
+
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 
 
@@ -225,87 +327,6 @@ Out.ar(0,Pan2.ar(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.
 
 3.wait;
 ~synth=Synth.new(\synth,[\gain,10,\tone,0,\low,0,\a,1,\pan,0.1,\band,(992*2).neg,\x,1,\m,1,\rq,1,\az,0,\el,0]).register;//s.record
-
-
-	////durs
-	({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c,n=0,bank=6,time=16.reciprocal,beat=1;
-
-~dur1=[];~dur2=[];~dur3=[];
-
-~x=bank.collect{
-m1=m1+1;
-	b=Spherical(beat,~az.[m1],~el.[m1]).x.round(0.00001);
-	2.pow(b).round(time);
-};
-~y=bank.collect{
-m2=m2+1;
-	c=Spherical(beat,~az.[m2],~el.[m2]).y.round(0.00001);
-	2.pow(c).round(time);
-};
-~z=bank.collect{
-m3=m3+1;
-	d=Spherical(beat,~az.[m3],~el.[m3]).z.round(0.00001);
-	2.pow(d).round(time);
-};
-		bank.do{ ~dur1=~dur1++~x.[n];n=n+1;};n=0;
-		bank.do{ ~dur2=~dur2++~y.[n];n=n+1;};n=0;
-		bank.do{ ~dur3=~dur3++~z.[n];n=n+1;};n=0;
-	//	bank.do{~durs=~durs++~x.[n]++~y.[n]++~z.[n];n=n+1;}
-//	~dur = ~duri.collect { |x|
-  //  if (x == 0) { Rest(2) } { x }
-//	}
-}.value;
-);
-			({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c,n=0,bank=6,time=16.reciprocal,beat=1;
-
-~dur4=[];~dur5=[];~dur6=[];
-
-~x1=bank.collect{
-m1=m1+1;
-	b=Spherical(beat,~az.[m1],~el.[m1]).rotate(90.degrad).x.round(0.00001);
-	2.pow(b).round(time);
-};
-~y1=bank.collect{
-m2=m2+1;
-	c=Spherical(beat,~az.[m2],~el.[m2]).rotate(90.degrad).y.round(0.00001);
-	2.pow(c).round(time);
-};
-~z1=bank.collect{
-m3=m3+1;
-	d=Spherical(beat,~az.[m3],~el.[m3]).rotate(90.degrad).z.round(0.00001);
-	2.pow(d).round(time);
-};
-		bank.do{ ~dur4=~dur4++~x1.[n];n=n+1;};n=0;
-		bank.do{ ~dur5=~dur5++~y1.[n];n=n+1;};n=0;
-		bank.do{ ~dur6=~dur6++~z1.[n];n=n+1;};n=0;
-	//	bank.do{~durs=~durs++~x.[n]++~y.[n]++~z.[n];n=n+1;}
-//	~dur = ~duri.collect { |x|
-  //  if (x == 0) { Rest(2) } { x }
-//	}
-}.value;
-)
-
-TempoClock.default.tempo_(4);
-			~ccBus = Bus.control(s, 1);
-~ccBus.set(0.5);
-
-MIDIdef.cc(\busCC, { |val|
-    ~ccBus.set(val.linlin(0, 127, 0, 1));
-}, 1);
-
-
-		(
-r = Routine({
-    var v;
-    loop {
-        ~ccBus.get({ |val|
-            v = val;
-        });
-        (v * 0.3).postln;
-        0.2.wait;
-    }
-}).play;
-)
 
 
 

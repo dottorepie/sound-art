@@ -67,10 +67,10 @@ wt = signal.asWavetable;
 	(
  (
 SynthDef(\kick, {
-	arg amp=1/8,n=12,pan=1,low=0,noise=0.001,decay=1/2,attack=0.001,az=0,el=0,m=1,fund=32;
+	arg amp=1/8,n=12,pan=1,low=0,noise=0.001,decay=1/2,attack=0.001,az=0,el=0,m=1,fund=32,az1=0,el1=0,az2=0,el2=0,az3=0,el3=0,temp_mag1=56,temp_mag2=56,temp_mag3=56;
     var env,freq,anglex,angley,anglez,mod_anglex,mod_angley,mod_anglez,mx,my,mz,magx,magz,magy;
 	var sph,phase,threshold,ton,phase1,phase2,phase3,sph1,loc1,loc2,loc3,mag;
-	var sig1,sig2,sig3,phasex,phasey,phasez,control1,control2,control3;
+	var sig1,sig2,sig3,phasex,phasey,phasez,control1,control2,control3,axis1,axis2,axis3;
 
 			ton=2.pow(n/56);
 	freq = EnvGen.kr(Env([fund*ton, fund], [decay], curve: -4)); // pitch drop
@@ -78,10 +78,12 @@ SynthDef(\kick, {
 
 			threshold=(((343/0.3)/freq).reciprocal.ampdb/2.sqrt).dbamp;
 
-					az=SinOsc.ar(pan/2,0).range(pi,pi.neg);
-			el=SinOsc.ar(pan/2,pi/2,pan.reciprocal).range((pi/2),(pi/2).neg);
+					axis1=Spherical(temp_mag1,az1.lag(0.01), el1.lag(0.01));
+				axis2=Spherical(temp_mag2,az2.lag(0.01), el2.lag(0.01));
+				axis3=Spherical(temp_mag3,az3.lag(0.01), el3.lag(0.01));
 
-		sph=Spherical(1,(az.lag(0.01)),(el.lag(0.01)));
+				sph=Cartesian(axis1.x,axis2.y,axis3.z);
+
 
 anglex=exp(Complex(0,1)*sph.theta).real*exp(Complex(0,1)*sph.phi).real;
 angley=exp(Complex(0,1)*sph.theta).imag*exp(Complex(0,1)*sph.phi).real;
@@ -226,12 +228,21 @@ m3=m3+1;
 		~a=Pdef(\1, Pbind(\instrument, \kick,
 			\dur,Pseq(~dur1,inf),
 				\amp,5,
-				\n,56,
+				\n,28,
 				\pan,10,
 					\m,1,
 			\low,0,
 				\noise,0.001,
-				\decay,4,
+					\az1,(pi/2).rand,
+					\el1,(pi/2).rand,
+					\az2,(pi/2).rand,
+					\el2,(pi/2).rand,
+					\az3,(pi/2).rand,
+					\el3,(pi/2).rand,
+			\temp_mag1,(pi/2).rand,
+					\temp_mag2,(pi/2).rand,
+					\temp_mag3,(pi/2).rand,
+				\decay,2,
 				\attack,0.001;
 		))
 );
@@ -252,7 +263,7 @@ m3=m3+1;
 
 
 
-TempoClock.default.tempo_(1);
+TempoClock.default.tempo_(2);
 
 (
 ~a.play;

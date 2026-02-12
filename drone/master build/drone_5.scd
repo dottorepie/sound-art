@@ -28,95 +28,6 @@ s.meter;
 	Tdef(\drone, {
 	Buffer.freeAll;
 
-	///vbap
-			/*(
-~a = VBAPSpeakerArray.new(3,
-				[[45, 35.264390.neg],[135.neg, 35.264390.neg],[45.neg, 35.264390],[135,35.264390]]);
-	 ~b = Buffer.loadCollection(s, ~a.getSetsAndMatrices);
-);*/
-/////////////osc polytope sequencer
-			////durs
-		(
-{
-var  sph1,sph2,az1=0,el1=0,az2=0,el2=0,angle=0;
-var azimuth,elevation,spread=1,silver_r=(1+2.sqrt);
-var mag1=1,mag2=1,mag3=1,mag4=1,mag5=1,mag6=1,mag7=1;
-	~az=[];~el=[];
-
-	16.do{
-azimuth=32.collect{
-			az1 = (az1+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
-		   el1 = (el1+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
-
-//	mag1=(mag1+(1-(1/1.6180339887499))).wrap(0,1);
-sph1=(Spherical(mag1,(az1+angle).wrap(pi.neg,pi),(el1+angle).wrap((pi/2).neg,(pi/2)))).theta.round(0.000000000001);
-
-	};
-
-elevation=32.collect{
-				az2 = (az2+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
-			el2 = (el2+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
-
-	//mag2=(mag2+(1-(1/1.6180339887499))).wrap(0,1);
-		sph2=(Spherical(mag2,(az2+angle).wrap(pi.neg,pi),(el2+angle).wrap((pi/2).neg,(pi/2)))).phi.round(0.000000000001);
-
-	};
-
-
-angle=(angle+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
-~az=~az++azimuth;~el=~el++elevation;
-	}
-}.value;
-);
-
-		(
-~azr=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
-~elr=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];
-);
-
-	({var m1=1.neg, m2=1.neg, m3=1.neg,a,b,c,n=0,bank=4,time=16.reciprocal,beat=1;
-
-~dur1=[];~dur2=[];~dur3=[];
-
-~x=bank.collect{
-m1=m1+1;
-	b=Spherical(beat,~azr.[m1],~elr.[m1]).x.round(0.00001);
-	2.pow(b).round(time);
-};
-~y=bank.collect{
-m2=m2+1;
-	c=Spherical(beat,~azr.[m2],~elr.[m2]).y.round(0.00001);
-	2.pow(c).round(time);
-};
-~z=bank.collect{
-m3=m3+1;
-	d=Spherical(beat,~azr.[m3],~elr.[m3]).z.round(0.00001);
-	2.pow(d).round(time);
-};
-		bank.do{ ~dur1=~dur1++~x.[n];n=n+1;};n=0;
-		bank.do{ ~dur2=~dur2++~y.[n];n=n+1;};n=0;
-		bank.do{ ~dur3=~dur3++~z.[n];n=n+1;};n=0;
-	//	bank.do{~durs=~durs++~x.[n]++~y.[n]++~z.[n];n=n+1;}
-//	~dur = ~duri.collect { |x|
-  //  if (x == 0) { Rest(2) } { x }
-//	}
-}.value;
-);
-
-		~controlBus_1 = Bus.control(s, 1);
-		~controlBus_2 = Bus.control(s, 1);
-		~controlBus_3 = Bus.control(s, 1);
-		~controlBus_4 = Bus.control(s, 1);
-		~controlBus_5 = Bus.control(s, 1);
-		~controlBus_6 = Bus.control(s, 1);
-		~controlBus_7 = Bus.control(s, 1);
-		~controlBus_8 = Bus.control(s, 1);
-		~controlBus_9 = Bus.control(s, 1);
-	    ~controlBus_10 = Bus.control(s, 1);
-		~controlBus_11 = Bus.control(s, 1);
-		~controlBus_12 = Bus.control(s, 1);
-	    ~controlBus_13 = Bus.control(s, 1);
-		~controlBus_14 = Bus.control(s, 1);
 
 ////// wavetables
 
@@ -139,30 +50,6 @@ wt = signal.asWavetable;
 //signal.plot;
 		}.value;
 );
-
-////control synth
-(
-SynthDef.new(\csynth,{
-
-	arg gain=1,low=992,tone=0,band=1,a=1,rq=1,pan=1,m=2,az=0,el=0,attack=0.01,decay=4,curve=4.neg,x=1;
-
-				Out.kr(~controlBus_1.index,DC.kr(x));
-				Out.kr(~controlBus_2.index,DC.kr(gain));
-				Out.kr(~controlBus_3.index,DC.kr(low));
-				Out.kr(~controlBus_4.index,DC.kr(tone));
-				Out.kr(~controlBus_5.index,DC.kr(band));
-				Out.kr(~controlBus_6.index,DC.kr(a));
-				Out.kr(~controlBus_7.index,DC.kr(rq));
-				Out.kr(~controlBus_8.index,DC.kr(pan));
-				Out.kr(~controlBus_9.index,DC.kr(m));
-				Out.kr(~controlBus_10.index,DC.kr(az));
-				Out.kr(~controlBus_11.index,DC.kr(el));
-				Out.kr(~controlBus_12.index,DC.kr(attack));
-				Out.kr(~controlBus_13.index,DC.kr(decay));
-				Out.kr(~controlBus_14.index,DC.kr(curve));
-
-			}
-).add;);
 
 		////sound
 (
@@ -330,23 +217,10 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 }).add;);
 
 3.wait;
-//~synth=Synth.new(\csynth,[\gain,10,\tone,0,\low,0,\a,1,\pan,0.1,\band,(992*2).neg,\x,1,\m,1,\rq,1,\az,0,\el,0]).register;//s.record
 
 		~synth=Synth.new(\synth,[\gain,10,\tone,992,\low,0,\a,1,\pan,992,\band,(992*16).neg,\x,1,\m,2,\rq,1,\az,pi/4,\el,pi/8]).register;//s.record
 
 (
-(
-		~s=Pdef(\1, Pbind(\instrument, \synth,
-			\dur,Pseq(~dur1,inf),
-				\amp,10,
-				\n,24,
-				\pan,1,
-			\low,0,
-				\noise,0.001,
-				\decay,1,
-				\attack,0.01;
-		))
-);
 
 2.wait;
 (
@@ -616,103 +490,9 @@ MIDIdef.cc(\midi_switch16,{ |val, num, chan, src|
 	);
 
 )
-});
+	)});
 	Tdef(\drone).play;
 }
 )
 )
-
-
-
-
-
-
-
-/*
-(
-var n=1.neg;
-r = Routine {
-	loop{ 6.do{n=n+1; Synth(\kick,[	\amp,10,\n,24,\pan,1,\low,0,\noise,0.001,\decay,1,\attack,0.01;]);
-		~dur1.[n].wait;};n=1.neg;
-		//2.wait;
-};
-
-}
-);
-
-r.play
-
-	///tetrahedron
-(
-~az=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
-~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];
-);
-//////cube
-(
-~az=[45.degrad,135.degrad,45.neg.degrad,135.neg.degrad,45.degrad,135.degrad,45.neg.degrad,135.neg.degrad];
-~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad];
-)
-
-/////octahedron
-
-(
-~az=[0.degrad,0.degrad,90.degrad,180.degrad,90.neg.degrad,0.degrad];
-~el=[90.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,90.degrad];
-)
-
-//////icosahedron
-(
-~az=[90.degrad,90.neg.degrad,0.degrad,180.degrad,58.28.degrad,121.72.degrad,121.72.neg.degrad,58.neg.degrad,90.degrad,90.neg.degrad,0.degrad,180.degrad];
-~el=[58.28.neg.degrad,58.28.neg.degrad,31.72.neg.degrad,31.72.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,58.28.degrad,58.28.degrad,31.72.degrad,31.72.degrad];
-)
-
-/////dodecahedron
-
-(
-~az=[45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,90.degrad,90.neg.degrad,0.degrad,180.degrad,45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,90.degrad,
-	90.neg.degrad,69.09.degrad,110.91.degrad,110.91.neg.degrad,69.09.neg.degrad,0.degrad,180.degrad];
-
-~el=[35.26.neg.degrad,35.26.neg.degrad,35.26.neg.degrad,35.26.neg.degrad,69.09.neg.degrad,69.09.neg.degrad,20.91.neg.degrad,20.91.neg.degrad,
-	35.26.degrad,35.26.degrad,35.26.degrad,35.26.degrad,69.09.degrad,69.09.degrad,0.degrad,0.degrad,0.degrad,0.degrad,20.91.degrad,20.91.degrad]
-)
-
-/////Rhombic dodecahedron//// hull
-
-(
-~az=[0.degrad,45.degrad,135.neg.degrad,135.degrad,45.neg.degrad,0.degrad,180.degrad,90.degrad,90.neg.degrad,0.degrad,
-	45.degrad,135.neg.degrad,135.degrad,45.neg.degrad];
-~el=[90.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,35.264390.neg.degrad,0.degrad
-	,0.degrad,0.degrad,0.degrad,90.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad,35.264390.degrad];
-)
-
-/////cuboctahedron//// core
-
-(
-~az=[0.degrad,90.degrad,180.degrad,90.neg.degrad,45.degrad,135.degrad,45.neg.degrad,135.neg.degrad,
-	0.degrad,90.degrad,180.degrad,90.neg.degrad];
-~el=[45.neg.degrad,45.neg.degrad,45.neg.degrad,45.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,
-	45.degrad,45.degrad,45.degrad,45.degrad];
-)
-
-
-///////////////Rhombic Triacontahedron//// hull
-(
-~az=[0.degrad,0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,
-	0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,
-	0.degrad,72.degrad,144.degrad,144.neg.degrad,72.neg.degrad,36.degrad,108.degrad,180.degrad,108.neg.degrad,36.neg.degrad,0.degrad];
-
-~el=[90.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,52.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,26.6.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,10.8.neg.degrad,52.6.degrad,52.6.degrad,52.6.degrad,52.6.degrad,52.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,26.6.degrad,10.8.degrad,10.8.degrad,10.8.degrad,10.8.degrad,10.8.degrad,90.degrad];
-
-)
-
-///////icosidodecahedron//// core
-(
-~az=[18.degrad,90.degrad,162.degrad,126.neg.degrad,54.neg.degrad,54.degrad,126.degrad,162.neg.degrad,90.neg.degrad,18.neg.degrad,
-	0.degrad,36.degrad,72.degrad,108.degrad,144.degrad,180.degrad,144.neg.degrad,108.neg.degrad,72.neg.degrad,36.neg.degrad,
-	54.degrad,126.degrad,162.neg.degrad,90.neg.degrad,18.neg.degrad,18.degrad,90.degrad,162.degrad,126.neg.degrad,54.neg.degrad];
-
-~el=[58.283.degrad,58.283.degrad,58.283.degrad,58.283.degrad,58.283.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,58.283.neg.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,0.degrad,
-37.717.degrad,37.717.degrad,37.717.degrad,37.717.degrad,37.717.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad,37.717.neg.degrad];
-
-)*/
 

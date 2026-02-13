@@ -21,7 +21,7 @@ Pen.translate(400,400);
 
 		b.rot(ot,ot,ot);
     ~v.refresh;
-	ot=ot+(2pi/180);
+	ot=ot+(2pi/360);
 
 };
 
@@ -30,9 +30,9 @@ Pen.translate(400,400);
   r= Routine({loop{
 
 
-	xx=~controlBus_1.getSynchronous*1000;
-	yy=~controlBus_2.getSynchronous*1000;
-	zz=~controlBus_3.getSynchronous*1000;
+	xx=~controlBus_1.getSynchronous*10;
+	yy=~controlBus_2.getSynchronous*10;
+	zz=~controlBus_3.getSynchronous*10;
 
 	~data=[[0,0,zz],[0,yy,0],[xx,0,0]];
 

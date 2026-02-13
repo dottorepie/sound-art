@@ -60,8 +60,9 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,band=1,x=1,a=1,rq=1,pan=1,m=2,mix=1,room=1,attack,decay,curve,az1=0,el1=0,az2=0,el2=0,az3=0,el3=0,temp_mag1=56,temp_mag2=56,temp_mag3=56,core=0.999;
-	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3,cloud=26,az=0,el=0;
+	arg gain=1,low=992,tone=0,band=1,x=1,a=1,rq=1,pan=1,m=2,mix=1,room=1,attack,decay,curve,
+				az1=0,el1=0,az2=0,el2=0,az3=0,el3=0,temp_mag1=56,temp_mag2=56,temp_mag3=56,core=0.0999,azx=0,azy=0,elx=0,ely=0;
+	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3,cloud=1,az=0,el=0;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
@@ -239,7 +240,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 					amb_y=amb_sig2;
 					amb_z=amb_sig3;
 
-					out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z, [0.degrad, 90.degrad], 0,4 ));
+				out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z, [azx, azy], [elx,ely],4 ));
 
 
 			//	Out.kr(~controlBus_1.index,A2K.kr(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01)*10));
@@ -251,9 +252,9 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 3.wait;
 
-		~synth=Synth.new(\synth,[\gain,5,\tone,992,\low,496,\a,1,\pan,992,\band,(992*16).neg,\x,1,\m,2,\rq,1,
-			\az1,(pi/2).rand,\el1,(pi/2).rand,\az2,(pi/2).rand,\el2,(pi/2).rand,\az3,(pi/2).rand,\el3,(pi/2).rand,\core,0.9999.rand,
-			\temp_mag1,56,\temp_mag2,56,\temp_mag3,56]).register;//s.record
+		~synth=Synth.new(\synth,[\gain,1,\tone,992*2,\low,496,\a,1,\pan,992,\band,(992*16).neg,\x,1,\m,2,\rq,1,
+			\az1,(pi/2).rand,\el1,(pi/2).rand,\az2,(pi/2).rand,\el2,(pi/2).rand,\az3,(pi/2).rand,\el3,(pi/2).rand,\core,0.0999.rand,
+			\temp_mag1,56,\temp_mag2,56,\temp_mag3,56,\azx,0,\azy,pi/2,\elx,pi/4,\ely,pi/4]).register;//s.record
 
 (
 

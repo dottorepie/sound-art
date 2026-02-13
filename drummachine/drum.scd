@@ -3,7 +3,7 @@
 (
 (
 s.options.numWireBufs = 1024*2;
-s.options.numOutputBusChannels=3;
+s.options.numOutputBusChannels=6;
 s.options.numInputBusChannels=0;
 s.options.memSize = 8192*4;
 s.options.blockSize = 64;
@@ -135,9 +135,13 @@ sig1 = sig1 + (sig1 * BrownNoise.ar(noise*loc1)); sig2 = sig2 + (sig2 * BrownNoi
 		sig1=tanh(sig1*1.5);sig2=tanh(sig2*1.5);sig3=tanh(sig2*1.5);
 
 
-		Out.ar(0, sig1*env*loc1.abs);
-		Out.ar(1, sig2*env*loc2.abs);
-		Out.ar(2, sig3*env*loc3.abs);
+		Out.ar(3, sig1*env*loc1.abs);
+		Out.ar(4, sig2*env*loc2.abs);
+		Out.ar(5, sig3*env*loc3.abs);
+
+								Out.kr(~controlBus_1.index,A2K.kr(sig1*env*loc1.abs*1000));
+				Out.kr(~controlBus_2.index,A2K.kr(sig2*env*loc1.abs*1000));
+				Out.kr(~controlBus_3.index,A2K.kr(sig3*env*loc1.abs*1000));
 
 }).add;);
 
@@ -172,17 +176,17 @@ axis=i+j+k;
 					3.do{
 ~x=bank.collect{
 m1=m1+1;
-					b=Spherical(beat,~az.[m1],~el.[m1]).rotate(r).x.round(0.00001);
+					b=Spherical(beat,~az.[m1],~el.[m1]).rotate(r).tilt(r).tumble(r).x.round(0.00001);
 	2.pow(b).round(time);
 };
 ~y=bank.collect{
 m2=m2+1;
-	c=Spherical(beat,~az.[m2],~el.[m2]).rotate(r).y.round(0.00001);
+	c=Spherical(beat,~az.[m2],~el.[m2]).rotate(r).tilt(r).tumble(r).y.round(0.00001);
 	2.pow(c).round(time);
 };
 ~z=bank.collect{
 m3=m3+1;
-	d=Spherical(beat,~az.[m3],~el.[m3]).rotate(r).z.round(0.00001);
+	d=Spherical(beat,~az.[m3],~el.[m3]).rotate(r).tilt(r).tumble(r).z.round(0.00001);
 	2.pow(d).round(time);
 }; m1=1.neg; m2=1.neg; m3=1.neg; ~dx=~dx++~x; ~dy=~dy++~y;  ~dz=~dz++~z;   ~x=[]; ~y=[]; ~z=[];  r=r+90.degrad; };
 
@@ -204,7 +208,7 @@ m3=m3+1;
 		~a=Pdef(\1, Pbind(\instrument, \kick,
 			\dur,Pseq(~dur1,inf),
 				\amp,5,
-				\n,0,
+				\n,496,
 				\pan,5,
 					\m,3,
 			\low,0,

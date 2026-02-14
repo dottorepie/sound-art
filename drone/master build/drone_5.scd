@@ -91,26 +91,27 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,x=1,pan=1,mix=1,cloud=3,a=1,oct1=1,oct2=1,oct3=1,az,el,angle,panx=1,pany=1,panz=1;
-	var rq=1,m=2,room=1,attack,decay,curve,band,azf=0,elf=0,s,q,r1,r2,r3,spread;
+	arg gain=1,low=992,tone=0,x=1,pan=1,mix=1,cloud=3,a=1,oct1=1,oct2=1,oct3=1,angle=0,panx=1,pany=1,panz=1;
+	var rq=1,m=2,room=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,spread,sq1,sq2,sq3,rotationx,rotationy,rotationz,c;
 	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand,azx=pi-(pi/4),azy=pi/4,elx=pi/4,ely=pi/4;
-	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3
+	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
-	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,spread=1,mq=(m-1),lfo,sph1,loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt);
-	var amb_w,amb_x,amb_y,amb_z,out,amb_sig1,amb_sig2,amb_sig3,control_ch=0;
-	var axis_x=[1,0,0];,axis_y=[0,1,0];,axis_z=[0,0,1];
+	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph1,loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt);
+	var amb_w,amb_x,amb_y,amb_z,out,amb_sig1,amb_sig2,amb_sig3,control_ch=0,az,el,axis=[1,1,1].normalizeSum.sqrt;
+	var axis_x=[1,0,0].normalizeSum.sqrt,axis_y=[0,1,0].normalizeSum.sqrt,axis_z=[0,0,1].normalizeSum.sqrt;
+	var i1=Quaternion(0, axis_x.[0], 0, 0),j1=Quaternion(0, 0, axis_x.[1], 0),k1=Quaternion(0, 0, 0, axis_x.[2]);
+    var i2=Quaternion(0, axis_y.[0], 0, 0),j2=Quaternion(0, 0, axis_y.[1], 0),k2=Quaternion(0, 0, 0, axis_y.[2]);
+	var i3=Quaternion(0, axis_z.[0], 0, 0),j3=Quaternion(0, 0, axis_z.[1], 0),k3=Quaternion(0, 0, 0, axis_z.[2]);
+	var axi1,axi2,axi3;
 
 fund=32*(9/8);
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 
-				cloud.do{
-
-							lfo=2.pow(pan/992);
+						lfo=2.pow(pan/992);
 					band=pan;
 					spread=lfo.reciprocal;
-
 
 			azf = (azf+(2pi-(2pi/s))).wrap(pi.neg,pi);
 		   elf = (elf+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
@@ -119,23 +120,34 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 					temp_mag2=56*oct2;
 					temp_mag3=56*oct3;
 
-					s=Spherical(1,az.lag(0,1),el.lag(0,1));
+	axi1=i1+j1+k1;
+	axi2=i2+j2+k2;
+	axi3=i3+j3+k3;
 
-q=Quaternion(0,s.x.round(0.00001),s.y.round(0.00001),s.z.round(0.00001));
-r1=((axis_x*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
-r2=((axis_y*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
-r3=((axis_z*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
-rotationx=r1*q1*r1.conjugate;
+				c=Cartesian(axis.[0],axis.[1],axis.[2]);
 
-sph2q= Cartesian(rotation1.b,rotation1.c,rotation1.d);
-sphcart2=Cartesian(sph2q.x,sph2q.y,sph2q.z).asArray;
+q=Quaternion(0,c.x.round(0.00001),c.y.round(0.00001),c.z.round(0.00001));
 
-					az1=pi.rand2;
-					el1=(pi/2).rand2;
-					az2=pi.rand2;
-					el2=(pi/2).rand2;
-					az3=pi.rand2;
-					el3=(pi/2).rand2;
+r1=((axi1*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
+r2=((axi2*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
+r3=((axi3*exp(Complex(0,1)*angle).imag)+exp(Complex(0,1)*angle).real);
+
+rotationx=r1*q*r1.conjugate;
+rotationy=r1*q*r2.conjugate;
+rotationz=r1*q*r3.conjugate;
+
+sq1= Cartesian(rotationx.b,rotationx.c,rotationx.d);
+sq2= Cartesian(rotationy.b,rotationy.c,rotationy.d);
+sq3= Cartesian(rotationz.b,rotationz.c,rotationz.d);
+
+					az1=sq1.theta;
+					el1=sq1.phi;
+					az2=sq2.theta;
+					el2=sq2.phi;
+					az3=sq3.theta;
+					el3=sq3.phi;
+
+				cloud.do{
 
 				axis1=Spherical(core+temp_mag1,(az1.lag(0.01)+azf).wrap(pi,pi.neg),  (el1.lag(0.01)+elf).wrap((pi/2),(pi/2).neg));
 					axis2=Spherical(core+temp_mag2,(az2.lag(0.01)+azf).wrap(pi,pi.neg), (el2.lag(0.01)+elf).wrap((pi/2),(pi/2).neg));

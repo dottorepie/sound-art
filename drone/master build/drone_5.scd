@@ -91,10 +91,10 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,x=1,pan=1,mix=1;
-	var rq=1,m=2,room=1,attack,decay,curve,a=1,band;
+	arg gain=1,low=992,tone=0,x=1,pan=1,mix=1,cloud=1,a=1,oct1=1,oct2=1,oct3=1;
+	var rq=1,m=2,room=1,attack,decay,curve,band;
 	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=0.00999,azx=pi-(pi/4),azy=pi/4,elx=pi/4,ely=pi/4;
-	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3,cloud=1,az=0,el=0;
+	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3,az=0,el=0;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
@@ -113,9 +113,9 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 			az = (az+(2pi-(2pi/g))).wrap(pi.neg,pi);
 		   el = (el+(pi-(pi/g))).wrap((pi/2).neg,(pi/2));
 
-					temp_mag1=56;
-					temp_mag2=56;
-					temp_mag3=56;
+					temp_mag1=56*oct1;
+					temp_mag2=56*oct2;
+					temp_mag3=56*oct3;
 
 
 					az1=pi.rand2;
@@ -287,7 +287,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 3.wait;
 
-		~synth=Synth.new(\synth,[\gain,1,\tone,0*2,\low,0,\pan,0,\x,1]).register;//s.record
+		~synth=Synth.new(\synth,[\gain,50,\tone,0,\low,0,\pan,0,\x,1,\cloud,3,\a,1,\oct1,1,\oc2,2,\oct3,1]).register;//s.record
 
 
 2.wait;
@@ -298,7 +298,7 @@ MIDIIn.connectAll;
 MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
 		var gain;
 	//[val, num, chan, src].postln;
-	gain=val.linlin(0,127,0,10).round(0.000001);
+	gain=val.linlin(0,127,0,100).round(0.000001);
 
 		gain.postln;
 		if(~synth.isPlaying,{~synth.set(\gain,gain)});

@@ -89,8 +89,8 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,x=1,pan=1,mix=1,a=1,oct1=1,oct2=1,oct3=1,angle=0,panx=1,pany=1,panz=1;
-	var rq=1,m=2,room=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,spread,sq1,sq2,sq3,rotationx,rotationy,rotationz,c,cloud=1;
+	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,angle=0,panx=1,pany=1,panz=1,fu=16;
+	var rq=1,m=2,room=0.5,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,spread,sq1,sq2,sq3,rotationx,rotationy,rotationz,c,cloud=1;
 	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand,azx=pi-(pi/4),azy=pi/4,elx=pi/4,ely=pi/4;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
@@ -104,7 +104,7 @@ SynthDef.new(\synth,{
 	var i3=Quaternion(0, axis_z.[0], 0, 0),j3=Quaternion(0, 0, axis_z.[1], 0),k3=Quaternion(0, 0, 0, axis_z.[2]);
 	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3;
 
-fund=32*(9/8);
+fund=fu*(9/8);
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 
 						lfo=2.pow(pan/992);
@@ -259,9 +259,9 @@ control1=SinOsc.ar(freq1,phase:phasex,mul:amp1);
 control2=SinOsc.ar(freq2,phase:phasey,mul:amp2);
 control3=SinOsc.ar(freq3,phase:phasez,mul:amp3);
 
-ds1=(LPF.ar((Osc.ar(~w1.bufnum,f1,phase:phasex,mul:100).abs*SinOsc.ar(f1,phase:phasex)),f1*2.pow(low.lag(0.01)/992),g1));
-ds2=(LPF.ar((Osc.ar(~w1.bufnum,f2,phase:phasey,mul:100).abs*SinOsc.ar(f2,phase:phasey)),f2*2.pow(low.lag(0.01)/992),g2));
-ds3=(LPF.ar((Osc.ar(~w1.bufnum,f3,phase:phasez,mul:100).abs*SinOsc.ar(f3,phase:phasez)),f3*2.pow(low.lag(0.01)/992),g3));
+ds1=(LPF.ar((Osc.ar(~w1.bufnum,f1,phase:phasex,mul:100).abs*SinOsc.ar(f1,phase:phasex)),f1*2.pow(low.lag(0.01)/992),g1/6));
+ds2=(LPF.ar((Osc.ar(~w1.bufnum,f2,phase:phasey,mul:100).abs*SinOsc.ar(f2,phase:phasey)),f2*2.pow(low.lag(0.01)/992),g2/6));
+ds3=(LPF.ar((Osc.ar(~w1.bufnum,f3,phase:phasez,mul:100).abs*SinOsc.ar(f3,phase:phasez)),f3*2.pow(low.lag(0.01)/992),g3/6));
 
 sig1=(LPF.ar((Osc.ar(~w1.bufnum,freq1,phase:phasex,mul:100).abs*SinOsc.ar(freq1,phase:phasex)),freq1*2.pow(low.lag(0.01)/992),amp1)+ds1);
 sig2=(LPF.ar((Osc.ar(~w1.bufnum,freq2,phase:phasey,mul:100).abs*SinOsc.ar(freq2,phase:phasey)),freq2*2.pow(low.lag(0.01)/992),amp2)+ds2);
@@ -327,7 +327,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 5.wait;
 
-		~synth=Synth.new(\synth,[\gain,5,\tone,0,\low,992,\pan,(992*16).neg,\x,1,\a,1,\oct1,1,\oct2,1,\oct3,1,\az,pi/16,\el,pi/2,\angle,pi/2,\panx,1,\pany,1,\panz,1]).register;//s.record
+		~synth=Synth.new(\synth,[\gain,1,\fu,64,\tone,0,\low,992,\pan,(992*16).neg,\mix,0.3,\x,4,\a,1,\oct1,1,\oct2,1,\oct3,1,\az,pi/16,\el,pi/2,\angle,pi/2,\panx,1,\pany,1,\panz,1]).register;//s.record
 
 
 2.wait;
@@ -393,56 +393,39 @@ MIDIdef.cc(\midi_pot6,{ |val, num, chan, src|
 
 
 
-
 	(
 MIDIdef.cc(\midi_switch1,{ |val, num, chan, src|
 		var ton;
-				if(val>0,ton=0);
+				if(val>0,ton=16);
 ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
+		if(~synth.isPlaying,{~synth.set(\fu, ton)});
 },14);
 	);
 	(
 MIDIdef.cc(\midi_switch2,{ |val, num, chan, src|
 		 var ton;
-					if(val>0,ton=1);
+					if(val>0,ton=32);
 ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
+		if(~synth.isPlaying,{~synth.set(\fu, ton)});
 },15);
 	);
 		(
 MIDIdef.cc(\midi_switch3,{ |val, num, chan, src|
 			var ton;
-					if(val>0,ton=2);
+					if(val>0,ton=64);
 ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
+		if(~synth.isPlaying,{~synth.set(\fu, ton)});
 },16);
 	);
 
 	(
 MIDIdef.cc(\midi_switch4,{ |val, num, chan, src|
          	var ton;
-				if(val>0,ton=3);
+				if(val>0,ton=128);
 ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
+		if(~synth.isPlaying,{~synth.set(\fu, ton)});
 },17);
 	);
-		(
-MIDIdef.cc(\midi_switch5,{ |val, num, chan, src|
-			var ton;
-				if(val>0,ton=4);
-ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
-},18);
-	);
-					(
-MIDIdef.cc(\midi_switch6,{ |val, num, chan, src|
-			var ton;
-					if(val>0,ton=6);
-ton.postln;
-		if(~synth.isPlaying,{~synth.set(\tone, ton)});
-},19);
-					);
 
 )
 	});
@@ -450,4 +433,26 @@ ton.postln;
 }
 )
 )
+
+
+(
+			////sequencer
+	~s= Routine({loop{
+
+	/*(
+MIDIFunc.noteOn({  |val, num, chan, src|
+				var ton;
+		if(val>0,ton=(56*2).rand2);
+ton.postln;
+		~synth.set(\tone, ton)	;
+});
+)*/
+	~synth.set(\tone, (56*2).rand)	;
+
+0.1.wait
+};
+});
+);
+
+	~s.play;
 

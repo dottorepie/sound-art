@@ -11,7 +11,7 @@ s.options.maxNodes = 1024 * 4;
 //s.recSampleFormat ="int16";
 //s.recChannels = 8;
 s.boot;
-~frames=256;
+~frames=128;
 )
 
 (4410/256)*64

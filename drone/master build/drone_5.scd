@@ -27,6 +27,17 @@ s.meter;
 	Buffer.freeAll;
 
 
+		///vbap
+
+		///cube
+
+(
+~a = VBAPSpeakerArray.new(3,
+[[45, 35.264390.neg], [135, 35.264390.neg], [45.neg, 35.264390.neg], [135.neg, 35.264390.neg],[45,35.264390],[135,35.264390],[45.neg,35.264390],[135.neg,35.264390]]);
+	 ~b = Buffer.loadCollection(s, ~a.getSetsAndMatrices);
+)
+
+
 ///animation buses
 		~controlBus_1a = Bus.control(s, 1);
 		~controlBus_2a = Bus.control(s, 1);
@@ -89,9 +100,9 @@ wt = signal.asWavetable;
 (
 SynthDef.new(\synth,{
 
-	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,angle=0,panx=1,pany=1,panz=1,fu=16;
-	var rq=1,m=2,room=0.5,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,spread,sq1,sq2,sq3,rotationx,rotationy,rotationz,c,cloud=1;
-	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand,azx=pi-(pi/4),azy=pi/4,elx=pi/4,ely=pi/4;
+	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,angle=0,panx=1,pany=1,panz=1,fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0;
+	var rq=1,m=2,room=0.5,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,sq1,sq2,sq3,rotationx,rotationy,rotationz,c,cloud=1;
+	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
@@ -281,19 +292,42 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 		sig1=HPF.ar(sig1,50);
 		sig2=HPF.ar(sig2, 50);
 		sig3=HPF.ar(sig3, 50);
+
 		sig1=Compander.ar(sig1,control1,threshold1,1.2,1/3,0.03,0.15);
 		sig2=Compander.ar(sig2,control2,threshold2,1.2,1/3,0.03,0.15);
 		sig3=Compander.ar(sig3,control3,threshold3,1.2,1/3,0.03,0.15);
-		sig1=tanh(sig1*1.5);sig2=tanh(sig2*1.5);sig3=tanh(sig3*1.5);
 
-					gain1=gain*rq1.sqrt.reciprocal;
-					gain2=gain*rq2.sqrt.reciprocal;
-					gain3=gain*rq3.sqrt.reciprocal;
+	///distortion
 
+		sig1 = sig1.softclip.distort; sig2 = sig2.softclip.distort;  sig3 = sig3.softclip.distort;
+
+		sig1=tanh(sig1*drive);sig2=tanh(sig2*drive);sig3=tanh(sig3*drive);
+
+		sig1 = (sig1 * drive) / (1 + (sig1 * drive).abs);  sig2 = (sig2 * drive) / (1 + (sig2 * drive).abs);  sig3 = (sig3 * drive) / (1 + (sig3 * drive).abs);
+
+
+	///final out
+					gain1=gain*rq1.sqrt.reciprocal*fu.reciprocal*drive.reciprocal;
+					gain2=gain*rq2.sqrt.reciprocal*fu.reciprocal*drive.reciprocal;
+					gain3=gain*rq3.sqrt.reciprocal*fu.reciprocal*drive.reciprocal;
+
+					///three channel
 				//	Out.ar(0,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01));
 				//	Out.ar(1,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01));
 				//	Out.ar(2,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01));
 
+					////azimuthal multichannel expansion
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),panx,width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),pany,width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),panz,width:spread));
+
+				///3d vbap expansion
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,width:spread));
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,,width:spread));
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,,width:spread));
+
+
+///anbisonic decoded on stereo
 					amb_sig1=(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01));
 					amb_sig2=(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01));
 					amb_sig3=(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01));
@@ -305,10 +339,8 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 				out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z, [azx+azf, azy+azf], [elx+elf,ely+elf], 2 ));
 
-			//Out.kr(0,PanAz.ar(4,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),panx,width:spread));
-			//Out.kr(0,PanAz.ar(4,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),pany,width:spread));
-			//Out.kr(0,PanAz.ar(4,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),panz,width:spread));
 
+	///aniumation control buses out
 
 			Out.kr(~controlBus_1a, A2K.kr(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01)*100));
 			Out.kr(~controlBus_2a, A2K.kr(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01)*100));
@@ -327,7 +359,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 5.wait;
 
-		~synth=Synth.new(\synth,[\gain,1,\fu,64,\tone,0,\low,992,\pan,(992*16).neg,\mix,0.3,\x,4,\a,1,\oct1,1,\oct2,1,\oct3,1,\az,pi/16,\el,pi/2,\angle,pi/2,\panx,1,\pany,1,\panz,1]).register;//s.record
+		~synth=Synth.new(\synth,[\gain,128,\drive,16,\fu,32,\tone,0,\low,0,\pan,(992*16).neg,\mix,0.3,\x,1,\a,1,\oct1,1,\oct2,1,\oct3,1,\az,pi/2,\el,pi/2,\angle,pi/2,\panx,1,\pany,1,\panz,1,\spread,1,\azx=0,\azy=0,\elx=0,\ely=0]).register;//s.record
 
 
 2.wait;
@@ -338,7 +370,7 @@ MIDIIn.connectAll;
 MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
 		var gain;
 	//[val, num, chan, src].postln;
-	gain=val.linlin(0,127,0,1000).round(0.000001);
+	gain=val.linlin(0,127,0,256).round(0.000001);
 
 		gain.postln;
 		if(~synth.isPlaying,{~synth.set(\gain,gain)});

@@ -212,7 +212,7 @@ var mag1=1,mag2=1,mag3=1,mag4=1,mag5=1,mag6=1,mag7=1;
 //	spread = if(m_z < 1) { 1 / m_z } { m_z };
 
 	8.do{
-azimuth=32.collect{
+azimuth=8.collect{
 			az1 = (az1+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 		   el1 = (el1+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -221,7 +221,7 @@ sph1=(Spherical(mag1,(az1+angle).wrap(pi.neg,pi),(el1+angle).wrap((pi/2).neg,(pi
 
 	};
 
-elevation=32.collect{
+elevation=8.collect{
 				az2 = (az2+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 			el2 = (el2+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -230,7 +230,7 @@ elevation=32.collect{
 
 	};
 
-magnitudex=	32.collect{
+magnitudex=	8.collect{
 			az3 = (az3+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 			el3 = (el3+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -242,7 +242,7 @@ magnitudex=	32.collect{
 
 				};
 
-magnitudey=	32.collect{
+magnitudey=	8.collect{
 			az4 = (az4+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 				el4 = (el4+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -254,7 +254,7 @@ magnitudey=	32.collect{
 				};
 
 
-qx=	32.collect{
+qx=	8.collect{
 			az5 = (az5+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 			el5 = (el5+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -271,7 +271,7 @@ cos((sph5.phi.round(0.000000000001)).wrap((pi/2).neg,(pi/2))))))).rho/(2.sqrt)).
 				};
 
 
-qy=	32.collect{
+qy=	8.collect{
 			az6 = (az6+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 			el6 = (el6+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -287,7 +287,7 @@ cos((sph6.phi.round(0.000000000001)).wrap((pi/2).neg,(pi/2))))))).rho/(2.sqrt)).
 				};
 
 
-magnitudez=	32.collect{
+magnitudez=	8.collect{
 			az7 = (az7+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 			el7 = (el7+(pi-(pi/silver_r))).wrap((pi/2).neg,(pi/2));
 
@@ -315,10 +315,10 @@ angle=(angle+(2pi-(2pi/silver_r))).wrap(pi.neg,pi);
 
 (
 			{
-var steps = 256;
+var steps =64;
 
 ~nVals = steps.collect { |i|
-    i.linexp(0, steps-1, 0.18, 256).round
+    i.linexp(0, steps-1, 0.18, 64).round
 };
 			~nVals.asInteger;
 			}.value;
@@ -343,7 +343,7 @@ SynthDef.new(\re, {
 	chain2 = FFT(LocalBuf(frames), in2);
 
 
-	256.do{
+	64.do{
 
 		chain1rl = chain1.pvcollect(frames,
 						{|mag, phase, index| [mag, (phase)]; }, frombin: ~nVals.[n], tobin: ~nVals.[n], zeroothers: 1);
@@ -354,10 +354,10 @@ chain1rr = chain2.pvcollect(frames,
 	sig1rl=IFFT(chain1rl);
 sig1rr=IFFT(chain1rr);
 
-			az1=LFNoise1.ar(3).range(pi,pi.neg);
-	el1=LFNoise1.ar(3).range((pi/2),(pi/2).neg);
-	az2=LFNoise1.ar(3).range(pi,pi.neg);
-	el2=LFNoise1.ar(3).range((pi/2),(pi/2).neg);
+			az1=LFNoise1.ar(2).range(pi,pi.neg);
+	el1=LFNoise1.ar(2).range((pi/2),(pi/2).neg);
+	az2=LFNoise1.ar(2).range(pi,pi.neg);
+	el2=LFNoise1.ar(2).range((pi/2),(pi/2).neg);
 
 		sph1=Spherical(1,(~az.[n]+az1).wrap(pi.neg,pi),(~el.[n]+el1).wrap((pi/2).neg,(pi/2)));
 		sph2=Spherical(1,(~az.[n]+az2).wrap(pi.neg,pi),(~el.[n]+el2).wrap((pi/2).neg,(pi/2)));

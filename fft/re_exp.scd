@@ -11,10 +11,10 @@ s.options.maxNodes = 1024 * 4;
 //s.recSampleFormat ="int16";
 //s.recChannels = 8;
 s.boot;
-~frames=64;
+~frames=256;
 )
 
-(4410/64)*64
+(4410/256)*64
 Buffer.freeAll
 (
 ~c1 = Buffer.readChannel(s,"/Users/amimid/Desktop/My Movie.wav",channels:0 );

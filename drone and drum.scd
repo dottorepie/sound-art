@@ -108,30 +108,29 @@ wt = signal.asWavetable;
 			~dist=Buffer.loadCollection(s,~transfer_function.asWavetableNoWrap);
 		);
 
-
-
-
 		////sound
 (
 SynthDef.new(\synth,{
 
 	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,panx=1,pany=1,panz=1,room=0.5,m=2,
-				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,
+				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,pann=0,
 				axisx1=1,axisy1=1,axisz1=1,axisx2=1,axisy2=1,axisz2=1,axisx3=1,axisy3=1,axisz3=1;
 	var rq=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,sq1,sq2,sq3,rotationx,rotationy,rotationz,cloud=1;
-	var az1,el1,az2,el2,az3,el3,temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand;
+	var temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
-	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph1,loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt);
+	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph1;
+	var loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt),tensor;
 	var amb_w,amb_x,amb_y,amb_z,out,amb_sig1,amb_sig2,amb_sig3,axisx,axisy,axisz,cx,cy,cz;
-	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3;
+	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3,sph_object,lfon;
 
 fund=fu*(9/8);
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 
 						lfo=2.pow(pan/992);
+				lfon=2.pow(pann/992);
 					band=pan;
 
 					temp_mag1=992*2.pow(oct1/992);
@@ -142,20 +141,16 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 				axisy=[axisx2,axisy2,axisz2].normalizeSum.sqrt;
 				axisz=[axisx3,axisy3,axisz3].normalizeSum.sqrt;
 
-				cx=Cartesian(axisx.[0],axisx.[1],axisx.[2]);
-				cy=Cartesian(axisy.[0],axisy.[1],axisy.[2]);
-				cz=Cartesian(axisz.[0],axisz.[1],axisz.[2]);
+				tensor=axisx+axisy+axisz;
 
+				sph_object=Cartesian(tensor.[0],tensor.[1],tensor.[2]);
 
-					az1=cx.theta; el1=cx.phi;
-					az2=cy.theta; el2=cy.phi;
-					az3=cz.theta; el3=cz.phi;
 
 				cloud.do{
 
-				axis1=Spherical(temp_mag1,(az1.lag(0.01)+azf).wrap(pi,pi.neg),  (el1.lag(0.01)+elf).wrap((pi/2),(pi/2).neg));
-					axis2=Spherical(temp_mag2,(az2.lag(0.01)+azf).wrap(pi,pi.neg), (el2.lag(0.01)+elf).wrap((pi/2),(pi/2).neg));
-					axis3=Spherical(temp_mag3,(az3.lag(0.01)+azf).wrap(pi,pi.neg), (el3.lag(0.01)+elf).wrap((pi/2),(pi/2).neg));
+				axis1=Spherical(temp_mag1,(sph_object.theta+azf).wrap(pi,pi.neg),  (sph_object.phi+elf).wrap((pi/2),(pi/2).neg));
+					axis2=Spherical(temp_mag2,(sph_object.theta+azf).wrap(pi,pi.neg), (sph_object.phi+elf).wrap((pi/2),(pi/2).neg));
+					axis3=Spherical(temp_mag3,(sph_object.theta+azf).wrap(pi,pi.neg), (sph_object.phi+elf).wrap((pi/2),(pi/2).neg));
 
 				polytope=Cartesian(axis1.x,axis2.y,axis3.z);
 
@@ -173,9 +168,9 @@ phase2=Complex(1,angley).theta;
 phase3=Complex(1,anglez).theta;
 
 
-mod_anglex=SinOsc.ar(lfo,phase1).range(pi.neg,pi);
-mod_angley=SinOsc.ar(lfo,phase2).range(pi.neg,pi);
-mod_anglez=SinOsc.ar(lfo,phase3).range((pi/2).neg,(pi/2));
+mod_anglex=SinOsc.ar(lfon,phase1).range(pi.neg,pi);
+mod_angley=SinOsc.ar(lfon,phase2).range(pi.neg,pi);
+mod_anglez=SinOsc.ar(lfon,phase3).range((pi/2).neg,(pi/2));
 
 					(
 		magx=((Complex(cos(((polytope.theta+mod_anglex).round(0.00001)*m).wrap(pi.neg,pi)),cos((((polytope.theta+mod_anglex).round(0.00001)*m)).wrap(pi.neg,pi))).rho/(2.sqrt))*(Complex(cos((polytope.phi.round(0.00001)).wrap((pi/2).neg,(pi/2))),cos((polytope.phi.round(0.00001)).wrap((pi/2).neg,(pi/2)))).rho/(2.sqrt));
@@ -202,19 +197,15 @@ sin((polytope.phi.round(0.00001)*(mq-1)).wrap((pi/2).neg,(pi/2)))))*
 cos((polytope.phi.round(0.00001)).wrap((pi/2).neg,(pi/2))))))).rho/(2.sqrt)).pow(spread);*/
 	);
 
-					mx=(Cartesian(magx.value,0,0).rho);
-					//mqx=(Cartesian(magqx.value,0,0).rho);
-					my=(Cartesian(0,magy.value,0).rho);
-					//mqy=(Cartesian(0,magqy.value,0).rho);
-					mz=(Cartesian(0,0,magz.value).rho);
-					mag=(Cartesian(magx.value,magy.value,0).rho);
-					//magq=(Cartesian(magqx.value,magqy.value,0).rho);
+					mx=(Cartesian(magx,0,0).rho);     //mqx=(Cartesian(magqx,0,0).rho);
+					my=(Cartesian(0,magy,0).rho);      //mqy=(Cartesian(0,magqy,0).rho);
+					mz=(Cartesian(0,0,magz).rho);
+					mag=(Cartesian(magx,magy,0).rho);	  //magq=(Cartesian(magqx,magqy,0).rho);
 
 
-						sph1=Spherical(mag,polytope.theta,polytope.phi);
-			loc1=sph1.x;
-			loc2=sph1.y;
-			loc3=sph1.z;
+		sph1=Spherical(mag,polytope.theta,polytope.phi);
+
+		loc1=sph1.x;  loc2=sph1.y;  loc3=sph1.z;
 
 phasex=Complex(1,mx.value).theta;
 phasey=Complex(1,my.value).theta;
@@ -337,7 +328,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 				out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z, [azx+azf, azy+azf], [elx+elf,ely+elf], 2 ));
 
 
-	///aniumation control buses out
+	///animation control buses out
 
 			Out.kr(~controlBus_1a, A2K.kr(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01)*100));
 			Out.kr(~controlBus_2a, A2K.kr(Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01)*100));
@@ -356,11 +347,13 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 5.wait;
 
-		~synth=Synth.new(\synth,[\gain,1,\drive,992*4,\overdrive,992*1,\fu,32,\tone,0,\low,0,\pan,(992*16).neg,
-			\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,
-			\x,1,\a,1,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
+		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
+			\mix,1,\drone_amp,1,\rz,100,\room,1,\m,2,\pann,(992*0),
+			\x,1,\a,2,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
 			\azx,0,\azy,pi/2,\elx,0,\ely,0,
-			\axisx1,1,\axisy1,1,\axisz1,1,\axisx2,1,\axisy2,1,\axisz2,1,\axisx3,1,\axisy3,1,\axisz3,1]).register;//s.record
+			\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
+			\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
+			\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record
 
 
 2.wait;
@@ -480,9 +473,9 @@ ton.postln;
 		~synth.set(\tone, ton)	;
 });
 )*/
-	~synth.set(\tone, (56*2).rand)	;
+	~synth.set(\tone, (56*2).rand2)	;
 
-0.1.wait
+1.wait
 };
 });
 );

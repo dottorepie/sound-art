@@ -128,6 +128,7 @@ SynthDef.new(\synth,{
 
 fund=fu*(9/8);
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
+				ton=2.pow((tone.lag(0.01))/56).round(0.0001);
 
 						lfo=2.pow(pan/992);
 				lfon=2.pow(pann/992);
@@ -211,8 +212,6 @@ phasex=Complex(1,mx.value).theta;
 phasey=Complex(1,my.value).theta;
 phasez=Complex(1,mz.value).theta;
 
-
-ton=2.pow((tone.lag(0.01))/56).round(0.0001);
 
 freq1=(fund*ton)*b_x.lag(0.01)*lamdoma;
 freq2=(fund*ton)*b_y.lag(0.01)*lamdoma;
@@ -347,9 +346,9 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 5.wait;
 
-		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
+		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,992,\low,992*0,\pan,(992*16).neg,
 			\mix,1,\drone_amp,1,\rz,100,\room,1,\m,3,\pann,(992*3).neg,
-			\x,1,\a,5,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
+			\x,1,\a,1,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
 			\azx,0,\azy,pi/2,\elx,0,\ely,0,
 			\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
 			\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
@@ -461,11 +460,31 @@ ton.postln;
 )
 
 
-(
-thisThread.randSeed = 1234;
 			////sequencer
+
+
+SerialPort.devices;
+~port = SerialPort.new("/dev/cu.usbserial-210",9600)
+
+(
+(
+~charArray = [];
+~getValues = Routine.new({
+
+	var ascii;
+	{ascii = ~port.read.asAscii;
+		if(ascii.isDecDigit, {~charArray = ~charArray.add(ascii)});
+		if(ascii == $a,{~val = ~charArray.collect(_.digit).convertDigits;
+			~charArray =[];
+		});
+	}.loop;
+
+}).play;
+);
 	~s= Routine({loop{
 
+	thisThread.randSeed = ~val;
+		~val.postln;
 	/*(
 MIDIFunc.noteOn({  |val, num, chan, src|
 				var ton;
@@ -474,9 +493,9 @@ ton.postln;
 		~synth.set(\tone, ton)	;
 });
 )*/
-	~synth.set(\tone, (56*2).rand2)	;
+	~synth.set(\a, 11.rand)	;
 
-4.wait
+1.wait
 };
 });
 );

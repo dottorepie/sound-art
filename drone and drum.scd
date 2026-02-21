@@ -113,7 +113,7 @@ wt = signal.asWavetable;
 SynthDef.new(\synth,{
 
 	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,panx=1,pany=1,panz=1,room=0.5,m=2,
-				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,pann=0,az=0,el=0;
+				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,pann=0,az=0,el=0,azr=0,elr=0;
 
 	var rq=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,sq1,sq2,sq3,rotationx,rotationy,rotationz,cloud=1;
 	var temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand;
@@ -139,7 +139,7 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 					temp_mag2=992*2.pow(oct2/992);
 					temp_mag3=992*2.pow(oct3/992);
 
-				spx=Spherical(1,az,el);spy=Spherical(1,(az+(pi/2)).wrap(pi.neg,pi),el);spz=Spherical(1,az,(el+(pi/2)).wrap((pi/2).neg,(pi/2)));
+				spx=Spherical(1,az,el);spy=Spherical(1,(az+azr).wrap(pi.neg,pi),el);spz=Spherical(1,az,(el+elr).wrap((pi/2).neg,(pi/2)));
 
 				//axisx=[axisx1,axisy1,axisz1].normalizeSum.sqrt;
 				//axisy=[axisx2,axisy2,axisz2].normalizeSum.sqrt;
@@ -356,7 +356,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
 			\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,\pann,(992*3).neg,
 			\x,1,\a,1,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
-			\azx,0,\azy,pi/2,\elx,0,\ely,0,\az,pi/3,\el,pi/3]).register;
+			\azx,0,\azy,pi/2,\elx,0,\ely,0,\az,pi/3,\el,pi/3,\azr,pi/3,\elr,pi/3]).register;
 			//\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
 		//	\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
 		//	\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record

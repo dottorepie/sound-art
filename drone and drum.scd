@@ -113,18 +113,19 @@ wt = signal.asWavetable;
 SynthDef.new(\synth,{
 
 	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,oct1=1,oct2=1,oct3=1,panx=1,pany=1,panz=1,room=0.5,m=2,
-				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,pann=0,
-				axisx1=1,axisy1=1,axisz1=1,axisx2=1,axisy2=1,axisz2=1,axisx3=1,axisy3=1,axisz3=1;
+				fu=16,drive=1,spread=1,azx=0,azy=0,elx=0,ely=0,overdrive=0.1,drone_amp=1,rz=100,pann=0,az=0,el=0;
+
 	var rq=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,sq1,sq2,sq3,rotationx,rotationy,rotationz,cloud=1;
 	var temp_mag1,temp_mag2,temp_mag3,core=(9/8).rand;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
 	var sig1,sig2,bank=6,out1,out2,band_osc1,band_osc2,ton,threshold1,threshold2,threshold3,phase1,phase2,phase3;
 	var band_osc3,band_osc4,band_osc5,band_osc6,sig3,out3,cell_tria,b_x,b_y,b_z,polytope,gain1,gain2,gain3,env,azimuth,elevation;
 	var magx,magy,magz,magqx,magqy,mod_anglex,anglex,angley,anglez,phasex,phasey,phasez,rq1,rq2,rq3,rq4,rq5,rq6;
-	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph1;
+	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph;
 	var loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt),tensor;
 	var amb_w,amb_x,amb_y,amb_z,out,amb_sig1,amb_sig2,amb_sig3,axisx,axisy,axisz,cx,cy,cz;
-	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3,sph_object,lfon;
+	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3,sph_object,lfon,sp;
+	var  axisx1=1,axisy1=1,axisz1=1,axisx2=1,axisy2=1,axisz2=1,axisx3=1,axisy3=1,axisz3=1;
 
 fund=fu*(9/8);
 lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
@@ -138,9 +139,15 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 					temp_mag2=992*2.pow(oct2/992);
 					temp_mag3=992*2.pow(oct3/992);
 
-				axisx=[axisx1,axisy1,axisz1].normalizeSum.sqrt;
-				axisy=[axisx2,axisy2,axisz2].normalizeSum.sqrt;
-				axisz=[axisx3,axisy3,axisz3].normalizeSum.sqrt;
+				sp=Spherical(1,az,el);
+
+				//axisx=[axisx1,axisy1,axisz1].normalizeSum.sqrt;
+				//axisy=[axisx2,axisy2,axisz2].normalizeSum.sqrt;
+				//axisz=[axisx3,axisy3,axisz3].normalizeSum.sqrt;
+
+				axisx=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
+				axisy=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
+				axisz=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
 
 				tensor=axisx+axisy+axisz;
 
@@ -160,9 +167,9 @@ b_y=2.pow(polytope.y.round(1)/992);
 b_z=2.pow(polytope.z.round(1)/992);
 
 
-anglex=(exp(Complex(0,1)*polytope.theta.lag(0.01)).real*exp(Complex(0,1)*polytope.phi.lag(0.01)).real).round(0.00001);
-angley=(exp(Complex(0,1)*polytope.theta.lag(0.01)).imag*exp(Complex(0,1)*polytope.phi.lag(0.01)).real).round(0.00001);
-anglez=(exp(Complex(0,1)*polytope.phi.lag(0.01)).imag).round(0.00001);
+anglex=(exp(Complex(0,1)*polytope.theta).real*exp(Complex(0,1)*polytope.phi).real).round(0.00001);
+angley=(exp(Complex(0,1)*polytope.theta).imag*exp(Complex(0,1)*polytope.phi).real).round(0.00001);
+anglez=(exp(Complex(0,1)*polytope.phi).imag).round(0.00001);
 
 phase1=Complex(1,anglex).theta;
 phase2=Complex(1,angley).theta;
@@ -204,9 +211,9 @@ cos((polytope.phi.round(0.00001)).wrap((pi/2).neg,(pi/2))))))).rho/(2.sqrt)).pow
 					mag=(Cartesian(magx,magy,0).rho);	  //magq=(Cartesian(magqx,magqy,0).rho);
 
 
-		sph1=Spherical(mag,polytope.theta,polytope.phi);
+		sph=Spherical(mag,polytope.theta,polytope.phi);
 
-		loc1=sph1.x;  loc2=sph1.y;  loc3=sph1.z;
+		loc1=sph.x;  loc2=sph.y;  loc3=sph.z;
 
 phasex=Complex(1,mx.value).theta;
 phasey=Complex(1,my.value).theta;
@@ -309,9 +316,9 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),panz,width:spread));
 
 				///3d vbap expansion
-//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,width:spread));
-//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,,width:spread));
-//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),~b,sph1.theta.raddeg,sph1.phi.raddeg,,width:spread));
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,sph.theta.raddeg,sph.phi.raddeg,width:spread));
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),~b,sph.theta.raddeg,sph.phi.raddeg,,width:spread));
+//Out.ar(0,VBAP.ar(8,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),~b,sph.theta.raddeg,sph.phi.raddeg,,width:spread));
 
 
 ///anbisonic decoded on stereo
@@ -346,13 +353,13 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 5.wait;
 
-		~synth=Synth.new(\synth,[\gain,20,\drive,496,\overdrive,992,\fu,16,\tone,56*1,\low,992*0,\pan,(992*16).neg,
+		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
 			\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,\pann,(992*3).neg,
-			\x,1,\a,3,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
-			\azx,0,\azy,pi/2,\elx,0,\ely,0,
-			\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
-			\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
-			\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record
+			\x,1,\a,1,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
+			\azx,0,\azy,pi/2,\elx,0,\ely,0,\az,0,\el,0]).register;
+			//\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
+		//	\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
+		//	\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record
 
 
 2.wait;
@@ -483,7 +490,8 @@ SerialPort.devices;
 );
 	~s= Routine({loop{
 
-	//thisThread.randSeed = ~val;
+	thisThread.randSeed = ~val;
+
 		~val.postln;
 	/*(
 MIDIFunc.noteOn({  |val, num, chan, src|
@@ -502,6 +510,7 @@ ton.postln;
 
 	~s.play;
 
+TempoClock.default.tempo_(2);
 
 
 
@@ -752,6 +761,8 @@ m3=m3+1;
 
 
 );
+
+
 
 
 

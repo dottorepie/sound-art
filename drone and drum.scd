@@ -124,7 +124,7 @@ SynthDef.new(\synth,{
 	var mod_angley,mod_anglez,mx,my,mz,mqx,mqy,mag,magq,mq=(m-1),lfo,sph;
 	var loc1,loc2,loc3,axis1,axis2,axis3,g=((1+5.sqrt)/2),s=(1+2.sqrt),tensor;
 	var amb_w,amb_x,amb_y,amb_z,out,amb_sig1,amb_sig2,amb_sig3,axisx,axisy,axisz,cx,cy,cz;
-	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3,sph_object,lfon,sp;
+	var axi1,axi2,axi3,ds1,ds2,ds3,f1,f2,f3,g1,g2,g3,sph_object,lfon,spx,spy,spz;
 	var  axisx1=1,axisy1=1,axisz1=1,axisx2=1,axisy2=1,axisz2=1,axisx3=1,axisy3=1,axisz3=1;
 
 fund=fu*(9/8);
@@ -139,15 +139,15 @@ lamdoma=(x.lag(0.01)+a.lag(0.01))/x.lag(0.01);
 					temp_mag2=992*2.pow(oct2/992);
 					temp_mag3=992*2.pow(oct3/992);
 
-				sp=Spherical(1,az,el);
+				spx=Spherical(1,az,el);spy=Spherical(1,(az+(pi/2)).wrap(pi.neg,pi),el);spz=Spherical(1,az,(el+(pi/2)).wrap((pi/2).neg,(pi/2)));
 
 				//axisx=[axisx1,axisy1,axisz1].normalizeSum.sqrt;
 				//axisy=[axisx2,axisy2,axisz2].normalizeSum.sqrt;
 				//axisz=[axisx3,axisy3,axisz3].normalizeSum.sqrt;
 
-				axisx=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
-				axisy=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
-				axisz=[sp.x,sp.y,sp.z].normalizeSum.sqrt;
+				axisx=[spx.x,spx.y,spx.z].normalizeSum.sqrt;
+				axisy=[spy.x,spy.y,spy.z].normalizeSum.sqrt;
+				axisz=[spz.x,spz.y,spz.z].normalizeSum.sqrt;
 
 				tensor=axisx+axisy+axisz;
 
@@ -356,7 +356,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
 			\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,\pann,(992*3).neg,
 			\x,1,\a,1,\oct1,0,\oct2,0,\oct3,0,\panx,1,\pany,1,\panz,1,\spread,1,
-			\azx,0,\azy,pi/2,\elx,0,\ely,0,\az,0,\el,0]).register;
+			\azx,0,\azy,pi/2,\elx,0,\ely,0,\az,pi/3,\el,pi/3]).register;
 			//\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
 		//	\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
 		//	\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record

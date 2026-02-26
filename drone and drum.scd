@@ -109,11 +109,12 @@ wt = signal.asWavetable;
 		);
 
 		////sound
+
 (
 SynthDef.new(\synth,{
 
 	arg gain=1,low=992,tone=0,x=1,pan=1,mix=0.3,a=1,panx=1,pany=1,panz=1,room=0.5,m=2,
-				fu=16,drive=1,spread=1,overdrive=0.1,drone_amp=1,rz=100,pann=0,az=0,el=0,azr=0;
+				fu=16,drive=1,spread=1,drone_amp=1,rz=100,pann=0,az=0,el=0,azr=0;
 
 	var rq=1,attack,decay,curve,band,azf=0,elf=0,q,r1,r2,r3,sq1,sq2,sq3,rotationx,rotationy,rotationz,cloud=3,core=(9/8).rand;
 	var lamdoma,freq1,freq2,freq3,fund,amp1,amp2,amp3,alpha,cell_az,cell_el,x_pos,y_pos,control1,control2,control3;
@@ -316,9 +317,10 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 				//	Out.ar(2,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01));
 
 					////azimuthal multichannel expansion
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),panx,width:spread));
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),pany,width:spread));
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),panz,width:spread));
+
+					//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),SinOsc.ar.ar(panx,phasex),width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig2,mix.lag(0.01),room.lag(0.01),mul:gain2*loc2.abs)),0.9,0.01),SinOsc.ar.ar(pany,phasey),width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig3,mix.lag(0.01),room.lag(0.01),mul:gain3*loc3.abs)),0.9,0.01),SinOsc.ar.ar(panz,phasez),width:spread));
 
 				///3d vbap expansion
 //Out.ar(0,VBAP.ar(6,Limiter.ar(LeakDC.ar(FreeVerb.ar(sig1,mix.lag(0.01),room.lag(0.01),mul:gain1*loc1.abs)),0.9,0.01),~b,spx.theta.raddeg,spx.phi.raddeg,width:spread));
@@ -336,7 +338,8 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 					amb_y=amb_sig2;
 					amb_z=amb_sig3;
 
-				out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z, [sph.theta+azf, sph.theta+azf], [sph.phi+elf,sph.phi+elf],2 ));
+				out= Out.ar(0,BFDecode1.ar1(amb_w, amb_x, amb_y, amb_z,
+						[sph.theta+azf, sph.theta+azf], [sph.phi+elf,sph.phi+elf],2 ));
 
 
 	///animation control buses out
@@ -356,7 +359,7 @@ threshold3=(((343/0.3)/fund).reciprocal.ampdb/2.sqrt).dbamp;
 
 }).add;);
 
-5.wait;
+10.wait;
 
 		//////kick
 
@@ -482,9 +485,9 @@ sig1 = sig1 + (sig1 * BrownNoise.ar(noise*loc1)); sig2 = sig2 + (sig2 * BrownNoi
 						//	Out.ar(1,Limiter.ar(LeakDC.ar(FreeVerb.ar((sig2),mix.lag(0.01),room.lag(0.01),mul:env*loc2.abs)),0.9,0.01));
 						//	Out.ar(2,Limiter.ar(LeakDC.ar(FreeVerb.ar((sig3),mix.lag(0.01),room.lag(0.01),mul:env*loc3.abs)),0.9,0.01));
 
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig1*env*loc1.abs),0.9,0.01),panx,width:spread));
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig2*env*loc2.abs),0.9,0.01),pany,width:spread));
-			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig3*env*loc3.abs),0.9,0.01),panz,width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig1*env*loc1.abs),0.9,0.01),SinOsc.ar.ar(panx,phasex),width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig2*env*loc2.abs),0.9,0.01),SinOsc.ar.ar(pany,phasey),width:spread));
+			//Out.kr(0,PanAz.ar(5,Limiter.ar(LeakDC.ar(sig3*env*loc3.abs),0.9,0.01),SinOsc.ar.ar(panz,phasez),width:spread));
 
 
 }).add;);
@@ -544,11 +547,11 @@ m3=m3+1;
 
 
 	(
-				thisThread.randSeed = 1234;
+			//	thisThread.randSeed = ~val;
 
 		~dr=Pdef(\1, Pbind(\instrument, \kick,
 			\dur,Pseq(~dur1,inf),
-				\gain,64,
+				\gain,0,
 				\tone,992*1,
 				\pan,496,
 					\m,2,
@@ -569,7 +572,33 @@ m3=m3+1;
 
 );
 
-		(
+
+	});
+	Tdef(\drone).play;
+}
+)
+)
+
+
+
+TempoClock.default.tempo_(2);
+
+
+
+
+		//~synth=Synth.new(\synth,[\gain,100,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
+		//	\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,\pann,(992*3).neg,
+		//	\x,1,\a,1,0,\panx,1,\pany,1,\panz,1,\spread,1,
+		//	\az,0,\el,0,\azr,0]).register;
+			//\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
+		//	\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
+		//	\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record
+
+		~synth=Synth(\synth).register;
+
+~dr.play;
+
+(
 MIDIClient.init;
 MIDIIn.connectAll;
 
@@ -612,10 +641,10 @@ MIDIdef.cc(\midi_pot4,{ |val, num, chan, src|
 
 														(
 MIDIdef.cc(\midi_pot5,{ |val, num, chan, src|
-		var fu;
-			fu=val.linlin(0,127,8,32).round(1/2).asInteger;
-		fu.postln;
-		if(~synth.isPlaying,{~synth.set(\fu,fu)});
+		var tone;
+			tone=val.linlin(0,127,0,56*4).round(1).asInteger;
+		tone.postln;
+		if(~synth.isPlaying,{~synth.set(\tone,tone)});
 },46);
 	);
 
@@ -728,12 +757,22 @@ MIDIdef.cc(\midi_slider1,{ |val, num, chan, src|
 			);
 
 											(
-MIDIdef.cc(\midi_slider4,{ |val, num, chan, src|
+MIDIdef.cc(\midi_slider2,{ |val, num, chan, src|
 		var m;
 		m=val.linlin(0,127,1,5).round(1).asInteger;
 		m.postln;
 		if(~synth.isPlaying,{~synth.set(\m,m)});
 },23);
+	);
+
+														(
+MIDIdef.cc(\midi_slider3,{ |val, num, chan, src|
+		var t;
+		t=val.linlin(0,127,1/8,8).round(1/8);
+		t.postln;
+		TempoClock.default.tempo_(t);
+
+},27);
 	);
 
 
@@ -825,33 +864,6 @@ a.postln;
 
 )
 
-	});
-	Tdef(\drone).play;
-}
-)
-)
-
-
-
-TempoClock.default.tempo_(2);
-
-
-
-
-		~synth=Synth.new(\synth,[\gain,20,\drive,0,\overdrive,0,\fu,16,\tone,0,\low,992*0,\pan,(992*16).neg,
-			\mix,0.3,\drone_amp,1,\rz,100,\room,1,\m,1,\pann,(992*3).neg,
-			\x,1,\a,1,0,\panx,1,\pany,1,\panz,1,\spread,1,
-			\az,0,\el,0,\azr,0]).register;
-			//\axisx1,0999.rand,\axisy1,0999.rand,\axisz1,0999.rand,
-		//	\axisx2,0999.rand,\axisy2,0999.rand,\axisz2,0999.rand,
-		//	\axisx3,0999.rand,\axisy3,0999.rand,\axisz3,0999.rand]).register;//s.record
-
-
-
-(
-~dr.play;
-);
-
 			////sequencer
 
 SerialPort.devices;
@@ -874,23 +886,16 @@ SerialPort.devices;
 );
 	~s= Routine({loop{
 
-//	thisThread.randSeed = ~val;
+	thisThread.randSeed = ~val;
 
-	//	~val.postln;
-	/*(
-MIDIFunc.noteOn({  |val, num, chan, src|
-				var ton;
-		if(val>0,a(56*2).rand2);
-a.postln;
-		~synth.set(\tone, ton)	;
-});
-)*/
+		~val.postln;
+
 	~synth.set(\tone, (56).rand)	;
 
 2.wait
 };
 });
-);
+)
 
 	~s.play;
 
@@ -908,7 +913,7 @@ a.postln;
 
 
 (
-				thisThread.randSeed = 1234;
+				//	thisThread.randSeed = ~val;
 
 		~dr=Pdef(\1, Pbind(\instrument, \kick,
 			\dur,Pseq(~dur1,inf),
@@ -929,21 +934,15 @@ a.postln;
 					\room,0.5;
 		))
 )
+
+
+
+
+
+
+
 /*
-(
-var n=1.neg;
-r = Routine {
-	loop{ 6.do{n=n+1; Synth(\kick,[	\amp,10,\n,24,\pan,1,\low,0,\noise,0.001,\decay,1,\attack,0.01;]);
-		~dur1.[n].wait;};n=1.neg;
-		//2.wait;
-};
-
-}
-);
-
-r.play
-
-	///tetrahedron
+/tetrahedron
 (
 ~az=[45.degrad,135.neg.degrad,45.neg.degrad,135.degrad];
 ~el=[35.264390.neg.degrad,35.264390.neg.degrad,35.264390.degrad,35.264390.degrad];

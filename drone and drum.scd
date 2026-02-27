@@ -167,13 +167,13 @@ cross = [
 
 				cloud.do{
 
-				axis=Spherical(12,(sph_object.theta+azf).wrap(pi,pi.neg),  (sph_object.phi+elf).wrap((pi/2),(pi/2).neg));
+				axis=Spherical(56,(sph_object.theta+azf).wrap(pi,pi.neg),  (sph_object.phi+elf).wrap((pi/2),(pi/2).neg));
 
 				polytope=Cartesian(axis.x,axis.y,axis.z);
 
-b_x=2.pow(polytope.x.round(1)/12);
-b_y=2.pow(polytope.y.round(1)/12);
-b_z=2.pow(polytope.z.round(1)/12);
+b_x=2.pow(polytope.x.round(1)/56);
+b_y=2.pow(polytope.y.round(1)/56);
+b_z=2.pow(polytope.z.round(1)/56);
 
 
 anglex=(exp(Complex(0,1)*polytope.theta).real*exp(Complex(0,1)*polytope.phi).real).round(0.00001);
@@ -607,7 +607,7 @@ MIDIIn.connectAll;
 					(
 MIDIdef.cc(\midi_pot1,{ |val, num, chan, src|
 		var drive;
-		drive=val.linlin(0,127,(992*2).neg,(992*4)).round(1).asInteger;
+		drive=val.linlin(0,127,(992*2).neg,(992*8)).round(1).asInteger;
 		drive.postln;
 		if(~synth.isPlaying,{~synth.set(\drive,drive)});
 },16);
@@ -753,7 +753,7 @@ MIDIdef.cc(\midi_pot16,{ |val, num, chan, src|
 			(
 MIDIdef.cc(\midi_slider1,{ |val, num, chan, src|
 		var gain;
-	gain=val.linlin(0,127,0,10).round(0.0001);
+	gain=val.linlin(0,127,0,1).round(0.0001);
 		gain.postln;
 		if(~synth.isPlaying,{~synth.set(\gain,gain)});
 },19);
@@ -1042,21 +1042,21 @@ SerialPort.devices;
 
 		~dr=Pdef(\1, Pbind(\instrument, \kick,
 			\dur,Pseq(~dur1,inf),
-				\gain,40,
-				\tone,992*1,
-				\pan,0,
-					\m,2,
+				\gain,100,
+				\tone,992*0,
+				\pan,992*1,
+					\m,1,
 			\low,0,
-				\noise,0.001,
-\az,pi,
-	\azr,0,
-	\el,0,
+				\noise,0.0001,
+\az,pi/4,
+	\azr,pi/2,
+	\el,pi/2,
 				\decay,2,
-				\attack,0.01,
+				\attack,0.001,
 
-					\rz,100,
-					\mix,0.1,
-					\room,1;
+					\rz,200,
+					\mix,0.2,
+					\room,0.5;
 		))
 )
 

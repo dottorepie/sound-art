@@ -1,5 +1,6 @@
 
 (
+s.options.numOutputBusChannels=4;
 s.waitForBoot;
 Buffer.freeAll;
 ~controlBus = Bus.control(s, 1);
@@ -15,7 +16,7 @@ Buffer.freeAll;
 
 		{
 var signal,wt;
-	signal=Env([1,1000],[1]);
+	signal=Env([1,100],[1],[16]);
 	wt = signal.asSignal(1024).asWavetable;
 ~w1.loadCollection(wt);
 //signal.plot;
@@ -23,7 +24,7 @@ var signal,wt;
 
 	{
 var signal,wt;
-	signal=Env([1,2000],[1]);
+	signal=Env([0.0001,1],[1],[8]);
 	wt = signal.asSignal(1024).asWavetable;
 ~w2.loadCollection(wt);
 //signal.plot;
@@ -31,7 +32,7 @@ var signal,wt;
 
 	{
 var signal,wt;
-	signal=Env([100,1],[1]);
+	signal=Env([10000,1],[1],[2]);
 	wt = signal.asSignal(1024).asWavetable;
 ~w3.loadCollection(wt);
 //signal.plot;
@@ -41,10 +42,9 @@ var signal,wt;
 
 SynthDef.new(\player,{
 	arg tempo;
-
-	Out.kr(~controlBus.index, (Osc.kr(~w1.bufnum,(1/1000)).abs));
-	Out.kr(~controlBus1.index, (Osc.kr(~w2.bufnum,(1/1000)).abs));
-		Out.kr(~controlBus2.index, (Osc.kr(~w3.bufnum,(1/1000)).abs));
+	Out.kr(~controlBus.index, (Osc.kr(~w1.bufnum,(1/100)).abs));
+	Out.kr(~controlBus1.index, (Osc.kr(~w2.bufnum,(1/100)).abs));
+		Out.kr(~controlBus2.index, (Osc.kr(~w3.bufnum,(1/100)).abs));
 
 
 }).add;
@@ -101,14 +101,14 @@ a.background = Color.black;
 	~az=[];~el=[];~magx=[];~magy=[];~magz=[];~qx=[];~qy=[];
 
 
-	5.do{
+	3.do{
 
-8.do{
+5.do{
 			az1 = (az1+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el1 = (el1+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 			sph1=(Spherical(mag1,(az1+angle).wrap(pi.neg,pi),(el1+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az11=az1;el11=el1;
 	azimuth=5.collect{
 				az11 = (az11+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -120,12 +120,12 @@ a.background = Color.black;
 			};~az=~az++azimuth;angle1=(angle1+(2pi-(2pi/s))).wrap(0,2pi);};
 		};
 
-8.do{
+5.do{
 			az2 = (az2+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el2 = (el2+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 			sph2=(Spherical(mag2,(az2+angle).wrap(pi.neg,pi),(el2+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az22=az2;el22=el2;
 	elevation=5.collect{
 				az22 = (az22+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -137,12 +137,12 @@ a.background = Color.black;
 			};~el=~el++elevation;angle2=(angle2+(2pi-(2pi/s))).wrap(0,2pi);};
 		};
 
-8.do{
+5.do{
 			az3 = (az3+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el3 = (el3+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 		    sph3=(Spherical(mag3,(az3+angle).wrap(pi.neg,pi),(el3+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az33=az3;el33=el3;
 	magnitudex=5.collect{
 				az33 = (az33+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -156,12 +156,12 @@ a.background = Color.black;
 			};~magx=~magx++magnitudex;angle3=(angle3+(2pi-(2pi/s))).wrap(0,2pi);};
 		};
 
-8.do{
+5.do{
 			az4 = (az4+(2pi-(2pi/s))).wrap(pi.neg,pi);
 				el4 = (el4+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 	sph4=(Spherical(mag4,(az4+angle).wrap(pi.neg,pi),(el4+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az44=az4;el44=el4;
 	magnitudey=5.collect{
 				az44 = (az44+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -176,12 +176,12 @@ a.background = Color.black;
 		};
 
 
-8.do{
+5.do{
 			az5 = (az5+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el5 = (el5+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 	sph5=(Spherical(mag5,(az5+angle).wrap(pi.neg,pi),(el5+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az55=az5;el55=el5;
 	qx=5.collect{
 				az55 = (az55+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -198,12 +198,12 @@ a.background = Color.black;
 
 
 
-8.do{
+5.do{
 			az6 = (az6+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el6 = (el6+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 	sph6=(Spherical(mag6,(az6+angle).wrap(pi.neg,pi),(el6+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az66=az6;el66=el6;
 		qy=5.collect{
 				az66 = (az66+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -219,12 +219,12 @@ a.background = Color.black;
 		};
 
 
-8.do{
+5.do{
 			az7 = (az7+(2pi-(2pi/s))).wrap(pi.neg,pi);
 			el7 = (el7+(pi-(pi/s))).wrap((pi/2).neg,(pi/2));
 sph7=(Spherical(mag7,(az7+angle).wrap(pi.neg,pi),(el7+angle).wrap((pi/2).neg,(pi/2))));
 
-			8.do{
+			5.do{
 				az77=az7;el77=el7;
 	magnitudez=	5.collect{
 				az77 = (az77+(2pi-(2pi/s))).wrap(pi.neg,pi);
@@ -243,7 +243,7 @@ angle=(angle+(2pi-(2pi/s))).wrap(0,2pi);
 	}
 }.value;
 );
-	dota=(5*8*8*5).collect{
+	dota=(3*5*5*3).collect{
 
 	az=~az.[pla];
 	el=~el.[pla];
@@ -260,7 +260,7 @@ angle=(angle+(2pi-(2pi/s))).wrap(0,2pi);
 	data =data++dota;
 	//data.postln;
  	a.data = data;  // Update ScatterView3d
-	(1).wait
+	(0.1).wait
 }});
 r.play;
 
@@ -272,7 +272,7 @@ Pen.translate(400,400);
 		a.rot(ot,ot,ot);
     ~v.refresh;
 
-		ot=ot+1.degrad;
+		ot=ot+0.1.degrad;
 
 };
 { while { run } {~v.background_(Color.black); ~v.refresh; (1/100).wait } }.fork(AppClock);

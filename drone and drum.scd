@@ -613,8 +613,9 @@ TempoClock.default.tempo_(2);
 		\mix,0.3,\drone_amp,1,\rz,100,\room,0.5,\m,1,\pann,(992*3).neg,
 			\x,1,\a,1,\panx,1,\pany,1,\panz,1,\spread,1,
 			\az,0,\el,0,\azr,0,\cloud,1]).register;
-~dr.play;
 )
+~dr.play;
+
 
 (
 MIDIClient.init;
@@ -800,6 +801,7 @@ MIDIdef.cc(\midi_slider4,{ |val, num, chan, src|
 		cl=val.linlin(0,127,1,10).round(1).asInteger;
 		cl.postln;
 	~synth.free;
+	1.wait;
 ~synth=Synth.new(\synth,[\gain,1,\drive,992,\fu,32,\tone,0,\low,992*0,\pan,(992*16).neg,
 		\mix,0.3,\drone_amp,1,\rz,100,\room,0.5,\m,1,\pann,(992*3).neg,
 			\x,1,\a,1,\panx,1,\pany,1,\panz,1,\spread,1,
